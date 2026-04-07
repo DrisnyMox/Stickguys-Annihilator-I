@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: de02fad5924c5dd40962d781c2c95b97
+timeCreated: 1463128292
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - p_Autos: {instanceID: 0}
+  - p_BuyDialog: {instanceID: 0}
+  - crClickScript1: {instanceID: 0}
+  - crClickScript2: {instanceID: 0}
+  - p_LevelComplite: {instanceID: 0}
+  - p_Pause: {instanceID: 0}
+  - p_HUD: {instanceID: 0}
+  - p_TooltipTNT: {fileID: 166290, guid: e1aeaea1211eb2b49b8f588cd2eb44c4, type: 2}
+  - tnt: {fileID: 168718, guid: c3f64240260c4844bbfd28b1b32c16e4, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

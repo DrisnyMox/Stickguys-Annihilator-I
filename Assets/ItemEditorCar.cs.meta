@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 4845272f08055954380e3aa8d809f8cf
+timeCreated: 1475326678
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - bodyworkHandler: {fileID: 11482470, guid: be3b4af2da791a84e89ca407aa16e45f, type: 2}
+  - ghghg: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
