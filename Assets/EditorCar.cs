@@ -3,7 +3,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 
 public class EditorCar : MonoBehaviour {
 
@@ -252,9 +251,6 @@ public class EditorCar : MonoBehaviour {
 
 	IEnumerator CreateImage(Vector3 leftPoint, Vector3 rightPoint, Vector3 upPoint, Vector3 downPoint ){
 		
-		if (!Directory.Exists (Application.persistentDataPath + "/Images/")) {
-			Directory.CreateDirectory (Application.persistentDataPath + "/Images/");
-		}
 
 		yield return new WaitForEndOfFrame(); 
 		leftPoint = Camera.main.WorldToScreenPoint (leftPoint);
@@ -271,10 +267,8 @@ public class EditorCar : MonoBehaviour {
 		TextureScale.Bilinear (imageCar, w, h);
 
 		HUD.imagesCarsCustom.Add (Sprite.Create (imageCar, new Rect (0, 0, imageCar.width, imageCar.height), new Vector2 (0.5f, 0.5f)));
-		FileStream fs = System.IO.File.Open(Application.persistentDataPath + "/Images/" + titleCar.Trim() + ".png", FileMode.Create); 
-		BinaryWriter binary = new BinaryWriter(fs);
-		binary.Write(imageCar.EncodeToPNG());	// и на диск
-		fs.Close();
+		byte[] previewBytes = imageCar.EncodeToPNG();
+		Serialization.UpdatePreviewPng(titleCar.Trim(), previewBytes);
 
 		ObjectKeeper.car.SetActive (false);
 		ObjectKeeper.car.transform.position = new Vector3 (-36.3f, 2.8f, 0);
