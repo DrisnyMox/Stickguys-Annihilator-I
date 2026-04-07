@@ -41,13 +41,14 @@ public class EditorCar : MonoBehaviour {
 	}
 
 	public void BeginSaveCar(){
-		if (titleCar.Length > 0) {
-			panelApproval.SetActive (false);
-			if (ItemEditorCar.carBase) {
-				BuildCar ();
-				foreach (ItemEditorCar iec in (ItemEditorCar[])FindObjectsOfType(typeof(ItemEditorCar))) {
-					Destroy (iec);
-				}
+		if (string.IsNullOrEmpty(titleCar)) {
+			titleCar = TryReadTitleFromInputField();
+		}
+		panelApproval.SetActive (false);
+		if (ItemEditorCar.carBase) {
+			BuildCar ();
+			foreach (ItemEditorCar iec in (ItemEditorCar[])FindObjectsOfType(typeof(ItemEditorCar))) {
+				Destroy (iec);
 			}
 		}
 	}
@@ -58,10 +59,31 @@ public class EditorCar : MonoBehaviour {
 	}
 
 	public void SetTitleCar(string title){
-		if (title.Length > 0) {
-			HUD.titleCarsCustom.Add (title);
-			titleCar = title.Trim ();
+		titleCar = NormalizeCarTitle(title);
+	}
+
+	string NormalizeCarTitle(string rawTitle) {
+		if (string.IsNullOrEmpty(rawTitle))
+			return string.Empty;
+
+		string title = rawTitle.Trim();
+		foreach (char invalid in System.IO.Path.GetInvalidFileNameChars()) {
+			title = title.Replace(invalid.ToString(), string.Empty);
 		}
+		return title.Trim();
+	}
+
+	string TryReadTitleFromInputField() {
+		InputField[] fields = FindObjectsOfType<InputField>();
+		for (int i = 0; i < fields.Length; i++) {
+			if (fields[i] != null && fields[i].gameObject.activeInHierarchy) {
+				string candidate = NormalizeCarTitle(fields[i].text);
+				if (!string.IsNullOrEmpty(candidate)) {
+					return candidate;
+				}
+			}
+		}
+		return string.Empty;
 	}
 
 	void BuildCar(){
@@ -208,6 +230,11 @@ public class EditorCar : MonoBehaviour {
 			wheels.Add (w);
 		}
 		string name = titleCar;
+		if (string.IsNullOrEmpty(name)) {
+			name = "CustomCar_" + System.DateTime.UtcNow.Ticks.ToString();
+		}
+		titleCar = name;
+		HUD.titleCarsCustom.Add(name);
 
 		SerializableCar car = new SerializableCar (positionRoot, nameRoot, scaleRoot, bodyworks, wheels, name);
 		car.textureSize.width = (int)(right.x - left.x + 16);
