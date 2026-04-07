@@ -46,44 +46,28 @@ public class Settings : MonoBehaviour {
 	}
 	
 	public static void SaveSlowMo(){
-		PlayerPrefs.DeleteKey ("stSlow");
-		PlayerPrefs.SetString ("stSlow", slowMo.ToString());
-		PlayerPrefs.Save ();
+		SaveLoadSystem.SaveSlowMo(slowMo);
 	}
 	public static void SaveDistance(){
-		PlayerPrefs.DeleteKey ("stDist");
-		PlayerPrefs.SetFloat ("stDist", distanceCamera);
-		PlayerPrefs.Save ();
+		SaveLoadSystem.SaveDistance(distanceCamera);
 	}
 	public static void SaveBlood(){
-		PlayerPrefs.DeleteKey ("stBlood");
-		PlayerPrefs.SetFloat ("stBlood", PoolManager.amountBlood);
-		PlayerPrefs.Save ();
+		SaveLoadSystem.SaveBlood(PoolManager.amountBlood);
 	}
 	public static void SaveLanguage(){
-		PlayerPrefs.DeleteKey ("stLang");
-		PlayerPrefs.SetInt ("stLang", language);
-		PlayerPrefs.Save ();
+		SaveLoadSystem.SaveLanguage(language);
 	}
 	public static void LoadLanguage(){
-		if (!PlayerPrefs.HasKey ("stLang"))
-			return;
-		language = PlayerPrefs.GetInt ("stLang");
+		language = SaveLoadSystem.LoadLanguage(language);
 	}
 	public static void LoadBlood(){
-		if (!PlayerPrefs.HasKey ("stBlood"))
-			return;
-		amountBlood = PlayerPrefs.GetFloat ("stBlood");
+		amountBlood = SaveLoadSystem.LoadBlood(amountBlood);
 	}
 	public static void LoadDistnace(){
-		if (!PlayerPrefs.HasKey ("stDist"))
-			return;
-		distanceCamera = PlayerPrefs.GetFloat ("stDist");
+		distanceCamera = SaveLoadSystem.LoadDistance(distanceCamera);
 	}
 	public static void LoadSlowMo(){
-		if (!PlayerPrefs.HasKey ("stSlow"))
-			return;
-		slowMo = bool.Parse(PlayerPrefs.GetString ("stSlow"));
+		slowMo = SaveLoadSystem.LoadSlowMo(slowMo);
 	}
 
 	public static void SetLan () {

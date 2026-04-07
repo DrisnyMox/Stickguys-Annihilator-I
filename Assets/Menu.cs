@@ -98,9 +98,9 @@ public class Menu : MonoBehaviour {
 		//Settings.current.moreGames = GameObject.Find ("txt_MoreGames").GetComponent<Text> ();
 		Settings.Texto();
 
-		if (!PlayerPrefs.HasKey("TNTBonus")) {
+		if (!SaveLoadSystem.HasKey(SaveLoadSystem.KeyTNTBonus)) {
 			TNT.IncreaseTNT(330);
-			PlayerPrefs.SetInt("TNTBonus", 1);
+			SaveLoadSystem.SaveInt(SaveLoadSystem.KeyTNTBonus, 1, true);
 		}
 	}
 
@@ -108,13 +108,13 @@ public class Menu : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.P)) {
 			Game.currentCoins = 1000000;
 			UpdateCoins();
-			PlayerPrefs.SetInt("coins", 1000000);
-			PlayerPrefs.SetString("gmdata", "");
-			PlayerPrefs.SetString("gmauto", "");
-			PlayerPrefs.Save();
+			SaveLoadSystem.SaveCoins(1000000);
+			SaveLoadSystem.SaveGameData(string.Empty);
+			SaveLoadSystem.SaveAutosData(string.Empty);
+			SaveLoadSystem.Save();
 		}
 		if (Input.GetKeyDown(KeyCode.D)) {
-			PlayerPrefs.DeleteAll();
+			SaveLoadSystem.DeleteAll();
 		}
 	}
 

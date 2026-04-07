@@ -115,17 +115,16 @@ public class HUD : MonoBehaviour {
             HelperShop();
             CheckAuto();
             GameObject.Find("btn_TNT").transform.GetChild(1).GetComponent<Text>().text = (int.Parse(Game.firstTNT + Game.secondTNT)).ToString();
-            if (!PlayerPrefs.HasKey("tooltipTNT"))
+            if (!SaveLoadSystem.HasKey(SaveLoadSystem.KeyTooltipTNT))
             {
                 Transform ui = GameObject.Find("UI").transform;
                 ui.GetChild(ui.childCount - 2).gameObject.SetActive(true);
                 GameObject.Find("txt_TooltipTNT").GetComponent<Text>().text = Settings.lng.txt_TooltipTNT;
-                PlayerPrefs.SetString("tooltipTNT", "showed");
-                PlayerPrefs.Save();
+                SaveLoadSystem.SaveString(SaveLoadSystem.KeyTooltipTNT, "showed", true);
             }
-            if (PlayerPrefs.HasKey("chmos"))
+            if (SaveLoadSystem.HasKey(SaveLoadSystem.KeyChmos))
             {
-                PlayerPrefs.DeleteKey("chmos");
+                SaveLoadSystem.DeleteKey(SaveLoadSystem.KeyChmos);
             }
             GameObject txtSlow = GameObject.Find("txt_Slow");
             if (txtSlow)
@@ -153,7 +152,7 @@ public class HUD : MonoBehaviour {
 	}//_________________________________________________________________________________
 
 	public void xyishe(){
-		PlayerPrefs.DeleteKey ("editor");
+		SaveLoadSystem.DeleteKey (SaveLoadSystem.KeyEditor);
 	}
 	public void xyishe2(){
 		Game.currentCoins += 8888888;
@@ -163,20 +162,20 @@ public class HUD : MonoBehaviour {
 
 	void Update(){
 		if (Input.GetKeyDown (KeyCode.L)) {
-			PlayerPrefs.DeleteKey ("tooltipTNT");
+			SaveLoadSystem.DeleteKey (SaveLoadSystem.KeyTooltipTNT);
 		}
 		if (Input.GetKeyDown (KeyCode.G)) {
 			Game.gears += 88;
 			Game.SaveGears ();
 		}
 		if (Input.GetKeyDown (KeyCode.U)) {
-			PlayerPrefs.DeleteKey ("gears");
+			SaveLoadSystem.DeleteKey (SaveLoadSystem.KeyGears);
 		}
 		if (Input.GetKeyDown (KeyCode.F9)) {
-			PlayerPrefs.DeleteKey ("gmauto");
+			SaveLoadSystem.DeleteKey (SaveLoadSystem.KeyGameAuto);
 		}
 		if (Input.GetKeyDown (KeyCode.X)) {
-			PlayerPrefs.DeleteKey ("editor");
+			SaveLoadSystem.DeleteKey (SaveLoadSystem.KeyEditor);
 		}
 		if(Input.GetKeyDown(KeyCode.Alpha0)){
 			Game.currentCoins += 888888;
@@ -319,8 +318,8 @@ public class HUD : MonoBehaviour {
 
 	public IEnumerator OpenEditorCar(){
 
-		if (PlayerPrefs.HasKey ("skidko")) {
-			PlayerPrefs.DeleteKey ("skidko");
+		if (SaveLoadSystem.HasKey (SaveLoadSystem.KeySkidko)) {
+			SaveLoadSystem.DeleteKey (SaveLoadSystem.KeySkidko);
 		}
 			
 		//if (Levels.editorIsOpen) {

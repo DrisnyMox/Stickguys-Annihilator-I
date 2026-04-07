@@ -12,15 +12,11 @@ public static class Game {
 	// Use this for initialization
 
 	public static void SaveCoins(){
-		PlayerPrefs.DeleteKey ("coins");
-		PlayerPrefs.SetInt ("coins", currentCoins);
-		PlayerPrefs.Save ();
+		SaveLoadSystem.SaveCoins(currentCoins);
 	}
 
 	public static void LoadCoins(){
-		if (!PlayerPrefs.HasKey ("coins"))
-			return;
-		currentCoins = PlayerPrefs.GetInt ("coins");
+		currentCoins = SaveLoadSystem.LoadCoins();
 	}
 
 	public static int GetNumberCurrentLevel(){
@@ -29,43 +25,29 @@ public static class Game {
 
 	public static void LoadGears(){
 		
-		if (!PlayerPrefs.HasKey ("gears")) {
-			gears = 88;
+		gears = SaveLoadSystem.LoadGears(88);
+		if (!SaveLoadSystem.HasKey(SaveLoadSystem.KeyGears)) {
 			SaveGears ();
-			return;
 		}
-		gears = PlayerPrefs.GetInt ("gears");
 	}
 
 	public static void SaveGears() {
-		//PlayerPrefs.DeleteKey ("gears");
-		PlayerPrefs.SetInt ("gears", gears);
-		PlayerPrefs.Save ();
+		SaveLoadSystem.SaveGears(gears);
 	}
 
 	public static void LoadCountTNT(){
-		if (!PlayerPrefs.HasKey ("fTNT")) {
-			firstTNT = "0";
-			secondTNT = "3";
-			PlayerPrefs.SetString ("fTNT", firstTNT);
-			PlayerPrefs.SetString ("sTNT", secondTNT);
-			PlayerPrefs.Save ();
-			return;
+		SaveLoadSystem.LoadTNT(out firstTNT, out secondTNT, "0", "3");
+		if (!SaveLoadSystem.HasKey(SaveLoadSystem.KeyFirstTNT)) {
+			SaveLoadSystem.SaveTNT(firstTNT, secondTNT);
 		}
-		firstTNT = PlayerPrefs.GetString ("fTNT");
-		secondTNT = PlayerPrefs.GetString ("sTNT");
 	}
 
 	public static void SaveCountTNT(string count){
 		if (count.Length > 1) {
-			PlayerPrefs.SetString ("fTNT", count.Substring (0, 1));
-			PlayerPrefs.SetString ("sTNT", count.Substring (1, count.Length-1));
-			PlayerPrefs.Save ();
+			SaveLoadSystem.SaveTNT(count.Substring (0, 1), count.Substring (1, count.Length-1));
 		} else {
-			PlayerPrefs.SetString ("fTNT", "0");
-			PlayerPrefs.SetString ("sTNT", count);
+			SaveLoadSystem.SaveTNT("0", count);
 		}
-		firstTNT = PlayerPrefs.GetString ("fTNT");
-		secondTNT = PlayerPrefs.GetString ("sTNT");
+		SaveLoadSystem.LoadTNT(out firstTNT, out secondTNT, "0", "0");
 	}
 }

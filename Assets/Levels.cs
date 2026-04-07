@@ -16,27 +16,23 @@ public static class Levels {
 	public static bool editorIsOpen = false;
 
 	public static void SaveData(){
-		PlayerPrefs.DeleteKey ("gmdata");
-		PlayerPrefs.DeleteKey ("gmauto");
 		string saveStr = "";
 		for (int i = 0; i < countLevels; i++) {
 			saveStr += string.Format ("{0}*{1};", recordExperience [i], isOpen [i]);
 		}
-		PlayerPrefs.SetString ("gmdata", saveStr);
+		SaveLoadSystem.SaveGameData(saveStr);
 		string saveAutos = "";
 		for (int i = 0; i < countAutos; i++) {
 			saveAutos += string.Format ("{0};", isOpenAuto [i]); 
 		}
-		PlayerPrefs.SetString ("gmauto", saveAutos);
+		SaveLoadSystem.SaveAutosData(saveAutos);
 
 
-		PlayerPrefs.Save ();
+		SaveLoadSystem.Save ();
 	}
 
 	public static void LoadData(){
-		if (!PlayerPrefs.HasKey ("gmdata"))
-			return;
-		string strData = PlayerPrefs.GetString ("gmdata");
+		string strData = SaveLoadSystem.LoadGameData();
 		if (strData.Length == 0)
 			return;
 		string[] itemsData = strData.Split (new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries);
@@ -47,9 +43,7 @@ public static class Levels {
 				isOpen [i] = bool.Parse (itemsLevel [1]);
 
 		}
-		if (!PlayerPrefs.HasKey ("gmauto"))
-			return;
-		string strAutos = PlayerPrefs.GetString ("gmauto");
+		string strAutos = SaveLoadSystem.LoadAutosData();
 		if (strAutos.Length == 0)
 			return;
 		string[] strAuto = strAutos.Split (new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries);
@@ -60,16 +54,11 @@ public static class Levels {
 	}
 
 	public static void SaveEditor(){
-		PlayerPrefs.SetString ("editor", editorIsOpen.ToString());
-		PlayerPrefs.Save ();
+		SaveLoadSystem.SaveEditorState(editorIsOpen);
 	}
 
 	public static void LoadEditor(){
-		if (!PlayerPrefs.HasKey ("editor")) {
-			return;
-		}
-		string str = PlayerPrefs.GetString ("editor");
-		editorIsOpen = bool.Parse (str);
+		editorIsOpen = SaveLoadSystem.LoadEditorState(false);
 	}
 		
 }
