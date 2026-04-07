@@ -213,7 +213,7 @@ public class CarScript : MonoBehaviour, IRewardedVideoAdListener {
 
 		if (Levels.currentExperience [numberLevel] > Levels.recordExperience [numberLevel]) {
 			Levels.recordExperience[numberLevel] = Levels.currentExperience [numberLevel];
-			GameObject.Find ("txt_Completed").GetComponent<Text> ().text = "-= NEW RECORD !!! =-";
+			GameObject.Find ("txt_Completed").GetComponent<Text> ().text = Settings.lng.txt_NewRecord;
 			GameObject.Find ("txt_Completed").GetComponent<Text> ().color = new Color (0.1f, 1, 0.1f);
 		}
 		GameObject.Find ("txt_OutExperience").GetComponent<Text> ().text = Levels.currentExperience [numberLevel].ToString ();

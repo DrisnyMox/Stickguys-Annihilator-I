@@ -23,7 +23,7 @@ public class UseTNT : MonoBehaviour {
 			presed = presed ? false : true;
 		else {
 			Transform ui = GameObject.Find ("UI").transform;
-			ui.GetChild (ui.childCount - 2).gameObject.SetActive (true);
+			//ui.GetChild (ui.childCount - 2).gameObject.SetActive (true);
 			GameObject.Find("txt_TooltipTNT").GetComponent<Text> ().text = Settings.lng.txt_TooltipTNT;
 		}
 	}

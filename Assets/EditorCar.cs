@@ -24,6 +24,8 @@ public class EditorCar : MonoBehaviour {
 		ChangeLanguage ();
 		panelApproval.SetActive (false);
 		ItemEditorCar.itemsEditor.Clear ();
+
+		GameObject.Find("txt_Geears").GetComponent<Text>().text = Settings.lng.txt_Gears;
 	}
 
 	public void SaveCar () {
@@ -35,7 +37,7 @@ public class EditorCar : MonoBehaviour {
 				countWheel++;
 		if (countWheel > 1) {
 			panelApproval.SetActive (true);
-			GameObject.Find ("txt_Ok").GetComponent<Text> ().text = Settings.lng.txt_YesEditor;
+			GameObject.Find ("txt_Ok").GetComponent<Text> ().text = Settings.lng.txt_Yes;
 			GameObject.Find ("txt_Cancel").GetComponent<Text> ().text = Settings.lng.txt_cancelEditor;
 		}
 	}

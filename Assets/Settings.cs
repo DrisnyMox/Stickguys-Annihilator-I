@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 public class Settings : MonoBehaviour {
+
+	[SerializeField] EventTrigger privacyPolicy;
 
 	public static bool slowMo = true;
 	public static float amountBlood = 88;
@@ -34,6 +37,9 @@ public class Settings : MonoBehaviour {
 		menu.p_Settings.transform.Find ("Btn Language").GetComponent<Image> ().sprite = btnLanguage [language];
 		ChangeLanguage ();
 
+#if !UNITY_ANDROID
+		privacyPolicy.gameObject.SetActive(false);
+#endif
 	}
 
 	void ChangeLanguageM(){
@@ -155,12 +161,16 @@ public class Settings : MonoBehaviour {
 			// Эдитор такоёбов
 			lng.txt_cancelEditor = "Отмена";
 			lng.txt_saveEditor = "Сохранить";
-			lng.txt_NoEditor = "Нет";
-			lng.txt_YesEditor = "Да";
-			lng.txt_SureEditor = "Вы уверены ?";
+			lng.txt_No = "Нет";
+			lng.txt_Yes = "Да";
+			lng.txt_AreYouSure = "Вы уверены ?";
 			lng.txt_BackEditor = "Назад";
 			lng.txt_Editor = "Редактор";
-
+			lng.txt_Gears = "Шестеренки";
+			lng.txt_EnterTitleCar = "Введите название машины...";
+			lng.txt_NewRecord = "-= НОВЫЙ РЕКОРД! =-";
+			lng.txt_tntShop = "TNT МАГАЗИН";
+			lng.txt_ExpShort = "Опыт:";
 		}
 
 		if (language == 1) {
@@ -215,11 +225,16 @@ public class Settings : MonoBehaviour {
 			// Эдитор такоёбов
 			lng.txt_cancelEditor = "Cancel";
 			lng.txt_saveEditor = "Save";
-			lng.txt_NoEditor = "No";
-			lng.txt_YesEditor = "Yes";
-			lng.txt_SureEditor = "Are you sure ?";
+			lng.txt_No = "No";
+			lng.txt_Yes = "Yes";
+			lng.txt_AreYouSure = "Are you sure ?";
 			lng.txt_BackEditor = "Back";
 			lng.txt_Editor = "Editor";
+			lng.txt_Gears = "Gears";
+			lng.txt_EnterTitleCar = "Enter title of Car...";
+			lng.txt_NewRecord = "-= NEW RECORD! =-";
+			lng.txt_tntShop = "TNT SHOP";
+			lng.txt_ExpShort = "Exp:";
 		}
 		ChangeLanguageM ();
 		if (GameObject.Find ("txt_MoreGames")) {
@@ -292,9 +307,14 @@ public struct Language {
 	// еблососы
 	public string txt_saveEditor;
 	public string txt_cancelEditor;
-	public string txt_SureEditor;
-	public string txt_YesEditor;
-	public string txt_NoEditor;
+	public string txt_AreYouSure;
+	public string txt_Yes;
+	public string txt_No;
 	public string txt_BackEditor;
 	public string txt_Editor;
+	public string txt_Gears;
+	public string txt_EnterTitleCar;
+	public string txt_NewRecord;
+	public string txt_tntShop;
+	public string txt_ExpShort;
 }

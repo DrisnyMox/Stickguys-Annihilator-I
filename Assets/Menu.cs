@@ -23,6 +23,10 @@ public class Menu : MonoBehaviour {
 	[SerializeField] ItemColorBone[] itemsBoneColor;
 	[SerializeField] Animation glowTNTHolder;
 
+	[Space]
+
+	[SerializeField] Button btnQuit;
+
 	public AudioClip[] Motors;
 	public static AudioClip[] motors;
 
@@ -102,6 +106,10 @@ public class Menu : MonoBehaviour {
 			TNT.IncreaseTNT(330);
 			SaveLoadSystem.SaveInt(SaveLoadSystem.KeyTNTBonus, 1, true);
 		}
+
+#if !UNITY_ANDROID
+		btnQuit.gameObject.SetActive(false);
+#endif
 	}
 
 	void Update() {
@@ -118,11 +126,13 @@ public class Menu : MonoBehaviour {
 		}
 	}
 
-	public void OpenLevels() {
+	public void OpenLevels()
+	{
 		p_Levels.SetActive(true);
 		p_MainMenu.SetActive(false);
 		p_Settings.SetActive(false);
 		ChangeLanguage();
+		UpdateCoins();
 	}
 
 	public void OpenMainMenu() {
@@ -143,6 +153,7 @@ public class Menu : MonoBehaviour {
 	public void OpenShopTNT() {
 		txtCountTNT.text = "x" + (int.Parse(Game.firstTNT + Game.secondTNT)).ToString();
 		p_BuyTNT.SetActive(true);
+		GameObject.Find("txt TNT Shop").GetComponent<Text>().text = Settings.lng.txt_tntShop;
 	}
 
 	public void OpenEditorVehicle() {
@@ -204,6 +215,9 @@ public class Menu : MonoBehaviour {
 
 	public void OpenBuyDialog() {
 		p_BuyDialog.SetActive(true);
+		GameObject.Find("txt-AreYouSure").GetComponent<Text>().text = Settings.lng.txt_AreYouSure;
+		GameObject.Find("Text No").GetComponent<Text>().text = Settings.lng.txt_No;
+		GameObject.Find("Text Yes").GetComponent<Text>().text = Settings.lng.txt_Yes;
 	}
 
 	public void CloseBuyDialog() {
@@ -285,7 +299,7 @@ public class Menu : MonoBehaviour {
 		} else if (Game.currentCoins >= 10000){
 			p_BuyColorsBoneDialog.SetActive (true);
 			currentItemBoneColor = icb;
-			GameObject.Find ("txt_Are You Sure").GetComponent<Text> ().text = Settings.lng.txt_SureEditor;
+			GameObject.Find ("txt_Are You Sure").GetComponent<Text> ().text = Settings.lng.txt_AreYouSure;
 			GameObject.Find ("txt_Cancel").GetComponent<Text> ().text = Settings.lng.txt_cancelEditor;
 		}
 		boneColor.SaveColor ();
@@ -309,9 +323,11 @@ public class Menu : MonoBehaviour {
 	}
 	#endregion
 
-	void UpdateCoins(){
-		txtCoins [0].text = "Coins:" + Game.currentCoins.ToString ();
-		txtCoins [1].text = "Coins:" + Game.currentCoins.ToString ();
+	void UpdateCoins()
+	{
+		var coinsStr = $"{Settings.lng.txt_Coins}{Game.currentCoins}";
+		txtCoins[0].text = coinsStr;
+		txtCoins[1].text = coinsStr;
 	}
 
 	public void StickmanCarnage(){
@@ -332,6 +348,7 @@ public class Menu : MonoBehaviour {
 		GameObject.Find ("txt_ThreePaths").GetComponent<Text> ().text = Settings.lng.map_ThreePaths;
 		GameObject.Find ("txt_HardRoad").GetComponent<Text> ().text = Settings.lng.map_HardRoad;
 		txtVehicleEditor.text = Settings.lng.txt_VehicleEditor;
+
 	}
 
 	public void Quit(){

@@ -118,7 +118,7 @@ public class HUD : MonoBehaviour {
             if (!SaveLoadSystem.HasKey(SaveLoadSystem.KeyTooltipTNT))
             {
                 Transform ui = GameObject.Find("UI").transform;
-                ui.GetChild(ui.childCount - 2).gameObject.SetActive(true);
+                //ui.GetChild(ui.childCount - 2).gameObject.SetActive(true);
                 GameObject.Find("txt_TooltipTNT").GetComponent<Text>().text = Settings.lng.txt_TooltipTNT;
                 SaveLoadSystem.SaveString(SaveLoadSystem.KeyTooltipTNT, "showed", true);
             }
@@ -473,9 +473,9 @@ public class HUD : MonoBehaviour {
 
 	public void BtnDeleteCar(int id){
 		p_Confirmation.SetActive (true);
-		GameObject.Find ("txt_YouSure").GetComponent<Text> ().text = Settings.lng.txt_SureEditor;
-		GameObject.Find ("txt_Yes").GetComponent<Text> ().text = Settings.lng.txt_YesEditor;
-		GameObject.Find ("txt_No").GetComponent<Text> ().text = Settings.lng.txt_NoEditor;
+		GameObject.Find ("txt_YouSure").GetComponent<Text> ().text = Settings.lng.txt_AreYouSure;
+		GameObject.Find ("txt_Yes").GetComponent<Text> ().text = Settings.lng.txt_Yes;
+		GameObject.Find ("txt_No").GetComponent<Text> ().text = Settings.lng.txt_No;
 		p_Confirmation.transform.GetChild (1).GetComponent<Button> ().onClick.RemoveAllListeners ();
 		p_Confirmation.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener (delegate() {
 			DeleteCar (id);

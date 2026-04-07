@@ -115,7 +115,8 @@ public class DamageDetect : MonoBehaviour {
 				} else {
 					Levels.currentExperience [numberLevel] += (int)(10 * (numberLevel / 1.3f));
 				}
-				txtExp.text = "Exp:"+Levels.currentExperience[numberLevel].ToString ();
+
+				txtExp.text = $"{Settings.lng.txt_ExpShort} {Levels.currentExperience[numberLevel]}";
 
 				if (sprBone) {
 					//Color c = new Color (1,1,1,0);

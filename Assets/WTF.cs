@@ -37,9 +37,9 @@ public class WTF : MonoBehaviour {
 		});
 		wtf.gameObject.SetActive (true);
 
-		GameObject.Find ("txt_YouSureEditor").GetComponent<Text> ().text = Settings.lng.txt_SureEditor;
-		GameObject.Find ("txt_YesEditor").GetComponent<Text> ().text = Settings.lng.txt_YesEditor;
-		GameObject.Find ("txt_NoEditor").GetComponent<Text> ().text = Settings.lng.txt_NoEditor;
+		GameObject.Find ("txt_YouSureEditor").GetComponent<Text> ().text = Settings.lng.txt_AreYouSure;
+		GameObject.Find ("txt_YesEditor").GetComponent<Text> ().text = Settings.lng.txt_Yes;
+		GameObject.Find ("txt_NoEditor").GetComponent<Text> ().text = Settings.lng.txt_No;
 
 		while(!agree){
 			print ("Wait");
