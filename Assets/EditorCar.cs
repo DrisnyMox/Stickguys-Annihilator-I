@@ -3,7 +3,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 
 public class EditorCar : MonoBehaviour {
 
@@ -42,13 +41,14 @@ public class EditorCar : MonoBehaviour {
 	}
 
 	public void BeginSaveCar(){
-		if (titleCar.Length > 0) {
-			panelApproval.SetActive (false);
-			if (ItemEditorCar.carBase) {
-				BuildCar ();
-				foreach (ItemEditorCar iec in (ItemEditorCar[])FindObjectsOfType(typeof(ItemEditorCar))) {
-					Destroy (iec);
-				}
+		if (string.IsNullOrEmpty(titleCar)) {
+			titleCar = TryReadTitleFromInputField();
+		}
+		panelApproval.SetActive (false);
+		if (ItemEditorCar.carBase) {
+			BuildCar ();
+			foreach (ItemEditorCar iec in (ItemEditorCar[])FindObjectsOfType(typeof(ItemEditorCar))) {
+				Destroy (iec);
 			}
 		}
 	}
@@ -59,10 +59,31 @@ public class EditorCar : MonoBehaviour {
 	}
 
 	public void SetTitleCar(string title){
-		if (title.Length > 0) {
-			HUD.titleCarsCustom.Add (title);
-			titleCar = title.Trim ();
+		titleCar = NormalizeCarTitle(title);
+	}
+
+	string NormalizeCarTitle(string rawTitle) {
+		if (string.IsNullOrEmpty(rawTitle))
+			return string.Empty;
+
+		string title = rawTitle.Trim();
+		foreach (char invalid in System.IO.Path.GetInvalidFileNameChars()) {
+			title = title.Replace(invalid.ToString(), string.Empty);
 		}
+		return title.Trim();
+	}
+
+	string TryReadTitleFromInputField() {
+		InputField[] fields = FindObjectsOfType<InputField>();
+		for (int i = 0; i < fields.Length; i++) {
+			if (fields[i] != null && fields[i].gameObject.activeInHierarchy) {
+				string candidate = NormalizeCarTitle(fields[i].text);
+				if (!string.IsNullOrEmpty(candidate)) {
+					return candidate;
+				}
+			}
+		}
+		return string.Empty;
 	}
 
 	void BuildCar(){
@@ -209,6 +230,11 @@ public class EditorCar : MonoBehaviour {
 			wheels.Add (w);
 		}
 		string name = titleCar;
+		if (string.IsNullOrEmpty(name)) {
+			name = "CustomCar_" + System.DateTime.UtcNow.Ticks.ToString();
+		}
+		titleCar = name;
+		HUD.titleCarsCustom.Add(name);
 
 		SerializableCar car = new SerializableCar (positionRoot, nameRoot, scaleRoot, bodyworks, wheels, name);
 		car.textureSize.width = (int)(right.x - left.x + 16);
@@ -252,9 +278,6 @@ public class EditorCar : MonoBehaviour {
 
 	IEnumerator CreateImage(Vector3 leftPoint, Vector3 rightPoint, Vector3 upPoint, Vector3 downPoint ){
 		
-		if (!Directory.Exists (Application.persistentDataPath + "/Images/")) {
-			Directory.CreateDirectory (Application.persistentDataPath + "/Images/");
-		}
 
 		yield return new WaitForEndOfFrame(); 
 		leftPoint = Camera.main.WorldToScreenPoint (leftPoint);
@@ -271,10 +294,8 @@ public class EditorCar : MonoBehaviour {
 		TextureScale.Bilinear (imageCar, w, h);
 
 		HUD.imagesCarsCustom.Add (Sprite.Create (imageCar, new Rect (0, 0, imageCar.width, imageCar.height), new Vector2 (0.5f, 0.5f)));
-		FileStream fs = System.IO.File.Open(Application.persistentDataPath + "/Images/" + titleCar.Trim() + ".png", FileMode.Create); 
-		BinaryWriter binary = new BinaryWriter(fs);
-		binary.Write(imageCar.EncodeToPNG());	// и на диск
-		fs.Close();
+		byte[] previewBytes = imageCar.EncodeToPNG();
+		Serialization.UpdatePreviewPng(titleCar.Trim(), previewBytes);
 
 		ObjectKeeper.car.SetActive (false);
 		ObjectKeeper.car.transform.position = new Vector3 (-36.3f, 2.8f, 0);

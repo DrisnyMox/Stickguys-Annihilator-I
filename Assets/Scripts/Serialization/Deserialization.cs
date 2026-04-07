@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Deserialization : MonoBehaviour {
 
-	public static void DeserializeCar(SerializableCar car){
+	public static void DeserializeCar(SerializableCar car, byte[] previewPngBytes = null){
 
 		GameObject customCar = new GameObject ();
 		customCar.name = "Moxyebina";
@@ -67,7 +67,14 @@ public class Deserialization : MonoBehaviour {
 		root.GetComponent<AudioContrCar> ().s_motor = Menu.motors[Random.Range(0,Menu.motors.Length)];
 
 		Texture2D img = new Texture2D (car.textureSize.width, car.textureSize.height);
-		img.LoadImage (System.IO.File.ReadAllBytes(Application.persistentDataPath + "/Images/" + car.name + ".png"));
+		if (previewPngBytes != null && previewPngBytes.Length > 0) {
+			img.LoadImage(previewPngBytes);
+		} else {
+			string previewPath = Application.persistentDataPath + "/Images/" + car.name + ".png";
+			if (System.IO.File.Exists(previewPath)) {
+				img.LoadImage(System.IO.File.ReadAllBytes(previewPath));
+			}
+		}
 		img.Apply ();
 
 

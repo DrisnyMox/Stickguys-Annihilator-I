@@ -7,54 +7,128 @@ using System.Runtime.Serialization;
 
 public class Serialization {
 
+	const string CarsFolder = "/Cars/";
+	const string JsonExtension = ".json";
+
+	[System.Serializable]
+	class CarSaveFileData {
+		public int version = 1;
+		public string name = string.Empty;
+		public string createdUtc = string.Empty;
+		public int gears = 0;
+		public string rootName = string.Empty;
+		public int previewWidth = 0;
+		public int previewHeight = 0;
+		public string binaryCarData = string.Empty;
+		public string previewPngData = string.Empty;
+	}
+
 	public static void Save(SerializableCar car) {
-		
-		if (!Directory.Exists (Application.persistentDataPath + "/Cars/")) {
-			Directory.CreateDirectory (Application.persistentDataPath + "/Cars/");
+		string carsDirectory = Application.persistentDataPath + CarsFolder;
+		if (!Directory.Exists(carsDirectory)) {
+			Directory.CreateDirectory(carsDirectory);
 		}
-		var files = Directory.GetFiles (Application.persistentDataPath + "/Cars/");
-		string name = car.name.Trim();//(files.Length).ToString ();
-		//SaveLoad.cube = Cube.cube;
-		BinaryFormatter bf = new BinaryFormatter();
-		SurrogateSelector ss = new SurrogateSelector ();
-		Vector3Surrogate Vector3_SS = new Vector3Surrogate();
-		ss.AddSurrogate(typeof(Vector3), new StreamingContext(StreamingContextStates.All), Vector3_SS);
 
-		bf.SurrogateSelector = ss;
+		string name = car.name.Trim();
+		byte[] payload = SerializeCarToBytes(car);
 
-		FileStream file = File.Create (Application.persistentDataPath + "/Cars/"+name+".stk");
-		//bf.Serialize(file, SaveLoad.cube);
-		bf.Serialize (file, car);
-		file.Close();
-		Debug.Log (Application.persistentDataPath);
-	}   
+		CarSaveFileData saveData = new CarSaveFileData();
+		saveData.name = name;
+		saveData.createdUtc = System.DateTime.UtcNow.ToString("o");
+		saveData.gears = car.gears;
+		saveData.rootName = car.nameRoot;
+		saveData.previewWidth = car.textureSize.width;
+		saveData.previewHeight = car.textureSize.height;
+		saveData.binaryCarData = System.Convert.ToBase64String(payload);
+		saveData.previewPngData = string.Empty;
+
+		string json = JsonUtility.ToJson(saveData, true);
+		File.WriteAllText(carsDirectory + name + JsonExtension, json);
+		Debug.Log(Application.persistentDataPath);
+	}
 
 	public static void Load() {
-		if (!Directory.Exists (Application.persistentDataPath + "/Cars/"))
+		string carsDirectory = Application.persistentDataPath + CarsFolder;
+		if (!Directory.Exists(carsDirectory))
 			return;
-		var files = Directory.GetFiles (Application.persistentDataPath + "/Cars/");
-		for (int i = 0; i < files.Length; i++) {
-			if(File.Exists(files[i]/*Application.persistentDataPath + "/Cars/"+i.ToString()+".stk"/**/)) {
-				BinaryFormatter bf = new BinaryFormatter();
-				SurrogateSelector ss = new SurrogateSelector ();
-				//Application.persistentDataPath это строка; выведите ее в логах и вы увидите расположение файла сохранений
-				Vector3Surrogate Vector3_SS = new Vector3Surrogate();
-				ss.AddSurrogate(typeof(Vector3), new StreamingContext(StreamingContextStates.All), Vector3_SS);
 
-				bf.SurrogateSelector = ss;
-				FileStream file = File.Open(files[i]/*Application.persistentDataPath + "/Cars/"+i.ToString()+".stk"/**/, FileMode.Open);
-				//SaveLoad.cube = (Cube)bf.Deserialize(file);
-				SerializableCar car  = (SerializableCar)bf.Deserialize (file);
-				file.Close();
-				//------------------------------
-				Deserialization.DeserializeCar(car);
-			}	
+		string[] jsonFiles = Directory.GetFiles(carsDirectory, "*" + JsonExtension);
+		for (int i = 0; i < jsonFiles.Length; i++) {
+			LoadFromJson(jsonFiles[i]);
 		}
+
+	}
+
+	static void LoadFromJson(string path) {
+		if (!File.Exists(path))
+			return;
+
+		string json = File.ReadAllText(path);
+		if (string.IsNullOrEmpty(json))
+			return;
+
+		CarSaveFileData saveData = JsonUtility.FromJson<CarSaveFileData>(json);
+		if (saveData == null || string.IsNullOrEmpty(saveData.binaryCarData))
+			return;
+
+		byte[] payload = System.Convert.FromBase64String(saveData.binaryCarData);
+		SerializableCar car = DeserializeCarFromBytes(payload);
+		byte[] previewBytes = null;
+		if (!string.IsNullOrEmpty(saveData.previewPngData)) {
+			previewBytes = System.Convert.FromBase64String(saveData.previewPngData);
+		}
+		Deserialization.DeserializeCar(car, previewBytes);
+	}
+
+
+	public static void UpdatePreviewPng(string carName, byte[] pngBytes) {
+		if (string.IsNullOrEmpty(carName) || pngBytes == null || pngBytes.Length == 0)
+			return;
+
+		string path = Application.persistentDataPath + CarsFolder + carName.Trim() + JsonExtension;
+		if (!File.Exists(path))
+			return;
+
+		string json = File.ReadAllText(path);
+		if (string.IsNullOrEmpty(json))
+			return;
+
+		CarSaveFileData saveData = JsonUtility.FromJson<CarSaveFileData>(json);
+		if (saveData == null)
+			return;
+
+		saveData.previewPngData = System.Convert.ToBase64String(pngBytes);
+		File.WriteAllText(path, JsonUtility.ToJson(saveData, true));
+	}
+
+	static byte[] SerializeCarToBytes(SerializableCar car) {
+		BinaryFormatter bf = CreateFormatter();
+		MemoryStream stream = new MemoryStream();
+		bf.Serialize(stream, car);
+		byte[] payload = stream.ToArray();
+		stream.Close();
+		return payload;
+	}
+
+	static SerializableCar DeserializeCarFromBytes(byte[] payload) {
+		BinaryFormatter bf = CreateFormatter();
+		MemoryStream stream = new MemoryStream(payload);
+		SerializableCar car = (SerializableCar)bf.Deserialize(stream);
+		stream.Close();
+		return car;
+	}
+
+	static BinaryFormatter CreateFormatter() {
+		BinaryFormatter bf = new BinaryFormatter();
+		SurrogateSelector ss = new SurrogateSelector();
+		Vector3Surrogate vector3Surrogate = new Vector3Surrogate();
+		ss.AddSurrogate(typeof(Vector3), new StreamingContext(StreamingContextStates.All), vector3Surrogate);
+		bf.SurrogateSelector = ss;
+		return bf;
 	}
 
 	public static void DeleteCar(int id){
-		File.Delete(Application.persistentDataPath + "/Cars/"+HUD.titleCarsCustom[id].Trim()+".stk");
-		File.Delete(Application.persistentDataPath + "/Images/"+HUD.titleCarsCustom[id].Trim()+".png");
+		File.Delete(Application.persistentDataPath + CarsFolder + HUD.titleCarsCustom[id].Trim() + JsonExtension);
 		GameObject g = HUD.carsCustom [id];
 		HUD.carsCustom.Remove (g);
 		string t = HUD.titleCarsCustom [id];
