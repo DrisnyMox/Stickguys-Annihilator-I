@@ -9,7 +9,6 @@ public class Serialization {
 
 	const string CarsFolder = "/Cars/";
 	const string JsonExtension = ".json";
-	const string BinaryExtension = ".stk";
 
 	[System.Serializable]
 	class CarSaveFileData {
@@ -56,11 +55,6 @@ public class Serialization {
 			LoadFromJson(jsonFiles[i]);
 		}
 
-		// Backward compatibility for legacy binary saves.
-		string[] legacyFiles = Directory.GetFiles(carsDirectory, "*" + BinaryExtension);
-		for (int i = 0; i < legacyFiles.Length; i++) {
-			LoadFromLegacyBinary(legacyFiles[i]);
-		}
 	}
 
 	static void LoadFromJson(string path) {
@@ -80,16 +74,6 @@ public class Serialization {
 		Deserialization.DeserializeCar(car);
 	}
 
-	static void LoadFromLegacyBinary(string path) {
-		if (!File.Exists(path))
-			return;
-
-		FileStream file = File.Open(path, FileMode.Open);
-		BinaryFormatter bf = CreateFormatter();
-		SerializableCar car = (SerializableCar)bf.Deserialize(file);
-		file.Close();
-		Deserialization.DeserializeCar(car);
-	}
 
 	static byte[] SerializeCarToBytes(SerializableCar car) {
 		BinaryFormatter bf = CreateFormatter();
@@ -119,7 +103,6 @@ public class Serialization {
 
 	public static void DeleteCar(int id){
 		File.Delete(Application.persistentDataPath + CarsFolder + HUD.titleCarsCustom[id].Trim() + JsonExtension);
-		File.Delete(Application.persistentDataPath + CarsFolder + HUD.titleCarsCustom[id].Trim() + BinaryExtension);
 		File.Delete(Application.persistentDataPath + "/Images/" + HUD.titleCarsCustom[id].Trim() + ".png");
 		GameObject g = HUD.carsCustom [id];
 		HUD.carsCustom.Remove (g);
