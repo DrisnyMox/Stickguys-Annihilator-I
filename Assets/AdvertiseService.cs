@@ -1,5 +1,5 @@
-﻿using AppodealAds.Unity.Api;
-using AppodealAds.Unity.Common;
+﻿//using AppodealAds.Unity.Api;
+//using AppodealAds.Unity.Common;
 using UnityEngine;
 using System;
 
@@ -13,18 +13,18 @@ public class AdvertiseService : MonoBehaviour {
 
         DebugLog.Add("before initialize");
         
-        Appodeal.initialize (appKey, Appodeal.REWARDED_VIDEO | Appodeal.BANNER | Appodeal.INTERSTITIAL, false);
+        //Appodeal.initialize (appKey, Appodeal.REWARDED_VIDEO | Appodeal.BANNER | Appodeal.INTERSTITIAL, false);
 
         DebugLog.Add("after initialize");
     }
 	
 
 	public static void ShowAdmobBottom(){
-		Appodeal.show (Appodeal.BANNER_BOTTOM);
+		//Appodeal.show (Appodeal.BANNER_BOTTOM);
 	}
 
 	public static void HideAdmobBottom(){
-		Appodeal.hide (Appodeal.BANNER);
+		//Appodeal.hide (Appodeal.BANNER);
 	}
 	
 

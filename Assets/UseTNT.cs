@@ -56,11 +56,13 @@ public class UseTNT : MonoBehaviour {
 			StartCoroutine (ColorUp (btn));
 	}
 
+#if UNITY_EDITOR
 	void Update(){
 		if (Input.GetKeyDown (KeyCode.N)) {
 			TNT.IncreaseTNT (5);
 		}
 	}
+#endif
 
 
 }

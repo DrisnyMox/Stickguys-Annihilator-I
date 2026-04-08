@@ -171,6 +171,7 @@ public class Settings : MonoBehaviour {
 			lng.txt_NewRecord = "-= НОВЫЙ РЕКОРД! =-";
 			lng.txt_tntShop = "TNT МАГАЗИН";
 			lng.txt_ExpShort = "Опыт:";
+			lng.txt_Blood = "Эффект\nКрови";
 		}
 
 		if (language == 1) {
@@ -235,6 +236,7 @@ public class Settings : MonoBehaviour {
 			lng.txt_NewRecord = "-= NEW RECORD! =-";
 			lng.txt_tntShop = "TNT SHOP";
 			lng.txt_ExpShort = "Exp:";
+			lng.txt_Blood = "Blood\nEffect";
 		}
 		ChangeLanguageM ();
 		if (GameObject.Find ("txt_MoreGames")) {
@@ -317,4 +319,5 @@ public struct Language {
 	public string txt_NewRecord;
 	public string txt_tntShop;
 	public string txt_ExpShort;
+	public string txt_Blood;
 }

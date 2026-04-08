@@ -76,6 +76,7 @@ public class HUD : MonoBehaviour {
 
             GameObject.Find("txt Gas").GetComponent<Text>().text = Settings.lng.txt_Gas;
             GameObject.Find("txt Break").GetComponent<Text>().text = Settings.lng.txt_Break;
+			GameObject.Find("txt Blood").GetComponent<Text>().text = Settings.lng.txt_Blood;
 
             numberLevel = Game.GetNumberCurrentLevel();//GameObject.Find ("Ragdoll Pafos").GetComponent<ComponentMenager> ().numberLevel;
             car = GameObject.Find("Car");
@@ -112,9 +113,11 @@ public class HUD : MonoBehaviour {
                 Camera.main.GetComponent<SmoothCamera>().target = car.transform;
                 DebugLog.Add("iffffffffffff");
             }
+
             HelperShop();
             CheckAuto();
-            GameObject.Find("btn_TNT").transform.GetChild(1).GetComponent<Text>().text = (int.Parse(Game.firstTNT + Game.secondTNT)).ToString();
+			UpdateTNTView();
+
             if (!SaveLoadSystem.HasKey(SaveLoadSystem.KeyTooltipTNT))
             {
                 Transform ui = GameObject.Find("UI").transform;
@@ -145,13 +148,21 @@ public class HUD : MonoBehaviour {
         {
             DebugLog.Add(e.ToString());
         }
+
 		yield return null;
-		p_Autos.SetActive (false);
+
+        UpdateTNTView();
+        p_Autos.SetActive (false);
 		CheckFire.Check ();
 
 	}//_________________________________________________________________________________
 
-	public void xyishe(){
+	void UpdateTNTView()
+	{
+        GameObject.Find("btn_TNT").transform.GetChild(1).GetComponent<Text>().text = $"{(int.Parse(Game.firstTNT + Game.secondTNT))}";
+    }
+
+    public void xyishe(){
 		SaveLoadSystem.DeleteKey (SaveLoadSystem.KeyEditor);
 	}
 	public void xyishe2(){
