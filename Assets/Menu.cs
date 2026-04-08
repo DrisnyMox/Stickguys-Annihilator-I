@@ -112,16 +112,20 @@ public class Menu : MonoBehaviour {
 #endif
 	}
 
-	void Update() {
-		if (Input.GetKeyDown(KeyCode.P)) {
-			Game.currentCoins = 1000000;
+	void Update()
+	{
+		if (Input.GetKeyDown(KeyCode.P))
+		{
+			Game.currentCoins += 5000;
 			UpdateCoins();
-			SaveLoadSystem.SaveCoins(1000000);
-			SaveLoadSystem.SaveGameData(string.Empty);
-			SaveLoadSystem.SaveAutosData(string.Empty);
-			SaveLoadSystem.Save();
+			SaveLoadSystem.SaveCoins(Game.currentCoins);
+			//SaveLoadSystem.SaveGameData(string.Empty);
+			//SaveLoadSystem.SaveAutosData(string.Empty);
+			//SaveLoadSystem.Save();
 		}
-		if (Input.GetKeyDown(KeyCode.D)) {
+
+		if (Input.GetKeyDown(KeyCode.D))
+		{
 			SaveLoadSystem.DeleteAll();
 		}
 	}

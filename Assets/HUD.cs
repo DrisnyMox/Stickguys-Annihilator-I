@@ -290,7 +290,10 @@ public class HUD : MonoBehaviour {
 
 	public void OpenBuyDialog(){
 		p_BuyDialog.SetActive (true);
-	}
+        GameObject.Find("txt-AreYouSure").GetComponent<Text>().text = Settings.lng.txt_AreYouSure;
+        GameObject.Find("Text No").GetComponent<Text>().text = Settings.lng.txt_No;
+        GameObject.Find("Text Yes").GetComponent<Text>().text = Settings.lng.txt_Yes;
+    }
 
 	public void CloseByuDialog(){
 		selectedAuto = -1;
