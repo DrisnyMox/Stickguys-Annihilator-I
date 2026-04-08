@@ -1,25 +1,31 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Snowflakes : MonoBehaviour {
+public class Snowflakes : MonoBehaviour
+{
+	[SerializeField] GameObject[] Ground;
 
-	int countExits = 0;
-	public GameObject[] Ground;// from Inspector
+    int countExits = 0;
 
-	void OnTriggerExit2D (Collider2D col) {
-		if(col.CompareTag("CAR")){
+    void OnTriggerExit2D(Collider2D col)
+	{
+		if (col.CompareTag("CAR"))
+		{
 			countExits++;
-			if (countExits >= 2) {
-				StartCoroutine (Dis ());
+			if (countExits >= 2 && gameObject.activeInHierarchy)
+			{
+				StartCoroutine(Dis());
 			}
 		}
 	}
 
-	IEnumerator Dis(){
-		yield return new WaitForSeconds (1f);
-		Destroy (gameObject);
-		foreach (GameObject gm in Ground) {
-			Destroy (gm);
+	IEnumerator Dis()
+	{
+		yield return new WaitForSeconds(1f);
+		Destroy(gameObject);
+		foreach (GameObject gm in Ground)
+		{
+			Destroy(gm);
 		}
 	}
 }

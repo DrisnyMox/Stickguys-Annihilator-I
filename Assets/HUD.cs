@@ -61,99 +61,102 @@ public class HUD : MonoBehaviour {
         }
 	}
 
-	IEnumerator Start () {
-        try
-        {
-            tntSelected = false;
-            Game.LoadGears();
-            Levels.LoadEditor();
+	IEnumerator Start()
+	{
+		//      try
+		//{
+		tntSelected = false;
+		Game.LoadGears();
+		Levels.LoadEditor();
 
 
-            p_Confirmation.SetActive(false);
-            p_ConfirmEditor.SetActive(false);
-            p_BuyDialog.SetActive(false);
-            p_Pause.gameObject.SetActive(false);
+		p_Confirmation.SetActive(false);
+		p_ConfirmEditor.SetActive(false);
+		p_BuyDialog.SetActive(false);
+		p_Pause.gameObject.SetActive(false);
 
-            GameObject.Find("txt Gas").GetComponent<Text>().text = Settings.lng.txt_Gas;
-            GameObject.Find("txt Break").GetComponent<Text>().text = Settings.lng.txt_Break;
-			GameObject.Find("txt Blood").GetComponent<Text>().text = Settings.lng.txt_Blood;
+		GameObject.Find("txt Gas").GetComponent<Text>().text = Settings.lng.txt_Gas;
+		GameObject.Find("txt Break").GetComponent<Text>().text = Settings.lng.txt_Break;
+		var txtBlood = GameObject.Find("txt Blood")?.GetComponent<Text>();
+		if (txtBlood)
+		{
+			txtBlood.text = Settings.lng.txt_Blood;
+		}
 
-            numberLevel = Game.GetNumberCurrentLevel();//GameObject.Find ("Ragdoll Pafos").GetComponent<ComponentMenager> ().numberLevel;
-            car = GameObject.Find("Car");
-            try
-            {
-                DebugLog.Add("knjkk - " + car.name);
-            } catch (System.NullReferenceException e)
-            {
-                DebugLog.Add(e.ToString());
-            }
+		numberLevel = Game.GetNumberCurrentLevel();//GameObject.Find ("Ragdoll Pafos").GetComponent<ComponentMenager> ().numberLevel;
+		car = GameObject.Find("Car");
+		//print($"{car} --------------");
+		if (currentCarIsCustom)
+		{
+			Destroy(car);
+			car = Instantiate(carsCustom[idAutoCustom]);
+			car.SetActive(true);
+			car.transform.GetChild(0).GetComponent<CarScript>().ControlCar[0] = crClickScript1;
+			car.transform.GetChild(0).GetComponent<CarScript>().ControlCar[1] = crClickScript2;
+			car.transform.GetChild(0).GetComponent<CarScript>().p_HUD = p_HUD;
+			car.transform.GetChild(0).GetComponent<CarScript>().p_LevelComplete = p_LevelComplite;
+			car.transform.GetChild(0).GetComponent<CarScript>().customCar = true;
 
-            if (currentCarIsCustom)
-            {
-                Destroy(car);
-                car = (GameObject)Instantiate(carsCustom[idAutoCustom]);
-                car.SetActive(true);
-                car.transform.GetChild(0).GetComponent<CarScript>().ControlCar[0] = crClickScript1;
-                car.transform.GetChild(0).GetComponent<CarScript>().ControlCar[1] = crClickScript2;
-                car.transform.GetChild(0).GetComponent<CarScript>().p_HUD = p_HUD;
-                car.transform.GetChild(0).GetComponent<CarScript>().p_LevelComplete = p_LevelComplite;
-                car.transform.GetChild(0).GetComponent<CarScript>().customCar = true;
+			Camera.main.GetComponent<SmoothCamera>().target = car.transform.GetChild(0);
+		}
+		else if (idAuto != 0)
+		{
+			Destroy(car);
+			car = Instantiate(cars[idAuto]);
+			car.GetComponent<CarScript>().ControlCar[0] = crClickScript1;
+			car.GetComponent<CarScript>().ControlCar[1] = crClickScript2;
+			car.GetComponent<CarScript>().p_HUD = p_HUD;
+			car.GetComponent<CarScript>().p_LevelComplete = p_LevelComplite;
 
-                Camera.main.GetComponent<SmoothCamera>().target = car.transform.GetChild(0);
-            }
-            else if (idAuto != 0)
-            {
-                Destroy(car);
-                car = (GameObject)Instantiate(cars[idAuto]);
-                car.GetComponent<CarScript>().ControlCar[0] = crClickScript1;
-                car.GetComponent<CarScript>().ControlCar[1] = crClickScript2;
-                car.GetComponent<CarScript>().p_HUD = p_HUD;
-                car.GetComponent<CarScript>().p_LevelComplete = p_LevelComplite;
+			Camera.main.GetComponent<SmoothCamera>().target = car.transform;
+			DebugLog.Add("iffffffffffff");
+		}
 
-                Camera.main.GetComponent<SmoothCamera>().target = car.transform;
-                DebugLog.Add("iffffffffffff");
-            }
+		HelperShop();
+		CheckAuto();
+		UpdateTNTView();
 
-            HelperShop();
-            CheckAuto();
-			UpdateTNTView();
-
-            if (!SaveLoadSystem.HasKey(SaveLoadSystem.KeyTooltipTNT))
-            {
-                Transform ui = GameObject.Find("UI").transform;
-                //ui.GetChild(ui.childCount - 2).gameObject.SetActive(true);
-                GameObject.Find("txt_TooltipTNT").GetComponent<Text>().text = Settings.lng.txt_TooltipTNT;
-                SaveLoadSystem.SaveString(SaveLoadSystem.KeyTooltipTNT, "showed", true);
-            }
-            if (SaveLoadSystem.HasKey(SaveLoadSystem.KeyChmos))
-            {
-                SaveLoadSystem.DeleteKey(SaveLoadSystem.KeyChmos);
-            }
-            GameObject txtSlow = GameObject.Find("txt_Slow");
-            if (txtSlow)
-                txtSlow.GetComponent<Text>().text = Settings.lng.txt_Slow;
-            GameObject txtActivate = GameObject.Find("txt_Activate");
-            if (txtActivate)
-                txtActivate.GetComponent<Text>().text = Settings.lng.txt_Activate;
-            txtPricePlacedCar.text = (80 * Game.GetNumberCurrentLevel()).ToString() + " " + Settings.lng.txt_PlacedCar;
-            backKeeper = FindObjectOfType<BackgroundsKeeper>();
-            if (backKeeper)
-            {
-                backKeeper.GetComponentInChildren<Image>().sprite = backKeeper.backgrounds[0];
-                btnSwitchBackground.SetActive(true);
-            }
-            else
-                btnSwitchBackground.SetActive(false);
-        } catch(System.Exception e)
-        {
-            DebugLog.Add(e.ToString());
-        }
+		if (!SaveLoadSystem.HasKey(SaveLoadSystem.KeyTooltipTNT))
+		{
+			Transform ui = GameObject.Find("UI").transform;
+			//ui.GetChild(ui.childCount - 2).gameObject.SetActive(true);
+			var txtTooltipTNT = GameObject.Find("txt_TooltipTNT")?.GetComponent<Text>();
+			if (txtTooltipTNT)
+			{
+				txtTooltipTNT.text = Settings.lng.txt_TooltipTNT;
+			}
+			SaveLoadSystem.SaveString(SaveLoadSystem.KeyTooltipTNT, "showed", true);
+		}
+		if (SaveLoadSystem.HasKey(SaveLoadSystem.KeyChmos))
+		{
+			SaveLoadSystem.DeleteKey(SaveLoadSystem.KeyChmos);
+		}
+		GameObject txtSlow = GameObject.Find("txt_Slow");
+		if (txtSlow)
+			txtSlow.GetComponent<Text>().text = Settings.lng.txt_Slow;
+		GameObject txtActivate = GameObject.Find("txt_Activate");
+		if (txtActivate)
+			txtActivate.GetComponent<Text>().text = Settings.lng.txt_Activate;
+		txtPricePlacedCar.text = (80 * Game.GetNumberCurrentLevel()).ToString() + " " + Settings.lng.txt_PlacedCar;
+		backKeeper = FindObjectOfType<BackgroundsKeeper>();
+		if (backKeeper)
+		{
+			backKeeper.GetComponentInChildren<Image>().sprite = backKeeper.backgrounds[0];
+			btnSwitchBackground.SetActive(true);
+		}
+		else
+			btnSwitchBackground.SetActive(false);
+		//}
+		//catch (System.Exception e)
+		//{
+		//	DebugLog.Add(e.ToString());
+		//	Debug.LogError(e);
+		//}
 
 		yield return null;
 
-        UpdateTNTView();
-        p_Autos.SetActive (false);
-		CheckFire.Check ();
+		p_Autos.SetActive(false);
+		CheckFire.Check();
 
 	}//_________________________________________________________________________________
 
@@ -230,26 +233,29 @@ public class HUD : MonoBehaviour {
 		SpawnAutoCustom (id);
 	}
 
-    void SpawnAuto(int id) {
-        GameObject spawnedCar = Instantiate(cars[id]);
-        DebugLog.Add(spawnedCar.ToString() + " -- spawn");
-     
-        spawnedCar.GetComponent<CarScript>().ControlCar[0] = crClickScript1;
-        spawnedCar.GetComponent<CarScript>().ControlCar[1] = crClickScript2;
-        spawnedCar.GetComponent<CarScript>().p_HUD = p_HUD;
-        spawnedCar.GetComponent<CarScript>().p_LevelComplete = p_LevelComplite;
-
-        Camera.main.GetComponent<SmoothCamera>().target = spawnedCar.transform;
-        CloseAutos();
-        DebugLog.Add(spawnedCar.name+ "-------");
-        DebugLog.Add(car.name+"+++++++++");
+	void SpawnAuto(int id)
+	{
         Destroy(car);
-        car = spawnedCar;
-        DebugLog.Add(car.name);
-        idAuto = id;
-        currentCarIsCustom = false;
-        CheckFire.Check();
-        
+
+        GameObject spawnedCar = Instantiate(cars[id]);
+		DebugLog.Add(spawnedCar.ToString() + " -- spawn");
+
+		spawnedCar.GetComponent<CarScript>().ControlCar[0] = crClickScript1;
+		spawnedCar.GetComponent<CarScript>().ControlCar[1] = crClickScript2;
+		spawnedCar.GetComponent<CarScript>().p_HUD = p_HUD;
+		spawnedCar.GetComponent<CarScript>().p_LevelComplete = p_LevelComplite;
+
+		Camera.main.GetComponent<SmoothCamera>().target = spawnedCar.transform;
+		CloseAutos();
+		//DebugLog.Add(spawnedCar.name + "-------");
+		//DebugLog.Add(car.name + "+++++++++");
+		
+		car = spawnedCar;
+		DebugLog.Add(car.name);
+		idAuto = id;
+		currentCarIsCustom = false;
+		CheckFire.Check();
+
 	}
 
 	void SpawnAutoCustom(int id){
@@ -377,16 +383,24 @@ public class HUD : MonoBehaviour {
 		}
 	}
 
-	public void Restart() {
-		numberLevel = Game.GetNumberCurrentLevel ();
-		Levels.currentExperience [numberLevel] = 0;
-		Camera.main.GetComponent<Restart> ().Reload (numberLevel);
+	public void Restart()
+	{
+		var outLevelHandler = FindObjectOfType<OutLevelHandler>();
+		if (outLevelHandler)
+		{
+			outLevelHandler.enabled = false;
+		}
+
+        numberLevel = Game.GetNumberCurrentLevel();
+		Levels.currentExperience[numberLevel] = 0;
+		Camera.main.GetComponent<Restart>().Reload(numberLevel);
 		CarScript crScrpt;
-		crScrpt = (CarScript)FindObjectOfType (typeof(CarScript));
+		crScrpt = (CarScript)FindObjectOfType(typeof(CarScript));
 		crScrpt.steps = 0;
 		Game.countShowAdvertise++;
-		if (Game.countShowAdvertise >= 3) {
-			crScrpt.ShowAdvertise ();
+		if (Game.countShowAdvertise >= 3)
+		{
+			crScrpt.ShowAdvertise();
 			Game.countShowAdvertise = 0;
 		}
 	}
