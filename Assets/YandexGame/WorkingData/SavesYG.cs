@@ -17,8 +17,25 @@ namespace YG
         public bool[] openLevels = new bool[3];
 
         // Ваши сохранения
+        public int coins;
+        public int gears;
+        public string firstTNT = "0";
+        public string secondTNT = "3";
+        public string gameData = string.Empty;
+        public string autosData = string.Empty;
+        public bool editorIsOpen;
+        public bool slowMo;
+        public float distance;
+        public float blood;
+        public int languageIndex;
+        public int tntBonus = 1;
+        public string tooltipTNT = string.Empty;
+        public string chmos = string.Empty;
+        public string skidko = string.Empty;
 
-        // ...
+        public int boneColorIndex;
+        public string unlocksColor = string.Empty;
+        public bool bloodActive;
 
         // Поля (сохранения) можно удалять и создавать новые. При обновлении игры сохранения ломаться не должны
 

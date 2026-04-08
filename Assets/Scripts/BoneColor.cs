@@ -21,20 +21,19 @@ public class BoneColor : ScriptableObject {
 				break;
 			}
 		}
-		PlayerPrefs.SetInt ("boneColor", index);
+		SaveLoadSystem.SaveInt("boneColor", index, false);
 
 		string saveUnlocks = "";
 		for (int i = 0; i < unlockBones.Length; i++) {
 			saveUnlocks += string.Format ("{0};", unlockBones[i].ToString());
 		}
-		PlayerPrefs.SetString ("unlocksColor", saveUnlocks);
-		PlayerPrefs.Save ();
+		SaveLoadSystem.SaveString("unlocksColor", saveUnlocks, true);
 	}
 		
 	public void LoadColor(){
-		if (!PlayerPrefs.HasKey ("boneColor"))
+		if (!SaveLoadSystem.HasKey ("boneColor"))
 			return;
-		currentColor = colorsBone [PlayerPrefs.GetInt ("boneColor")];
+		currentColor = colorsBone [PlayerPrefs.GetInt("boneColor")];
 
 		string loadUnlocks = PlayerPrefs.GetString ("unlocksColor");
 		string[] itemsData = loadUnlocks.Split (new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries);
