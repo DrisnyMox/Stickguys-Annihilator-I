@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -14,6 +15,25 @@ public class SceneSwitcher
     public static void OpenEditorCarScene()
     {
         OpenScene("Editor Car");
+    }
+
+    [MenuItem("Stickguys/Saves/Reset All Saves")]
+    public static void ResetAllSaves()
+    {
+        bool confirm = EditorUtility.DisplayDialog(
+            "Reset saves",
+            "Delete all saved data (PlayerPrefs)? This action cannot be undone.",
+            "Delete",
+            "Cancel");
+
+        if (!confirm)
+        {
+            return;
+        }
+
+        SaveLoadSystem.DeleteAll();
+        SaveLoadSystem.Save();
+        Debug.Log("All saves were deleted.");
     }
 
     private static void OpenScene(string sceneName)
@@ -35,3 +55,4 @@ public class SceneSwitcher
         }
     }
 }
+#endif

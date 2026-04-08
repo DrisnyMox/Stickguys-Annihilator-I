@@ -14,11 +14,12 @@ public class TNT : MonoBehaviour {
 		Destroy (gameObject);
 	}
 
-	public static void DecreaseTNT(){
-		Game.SaveCountTNT ( (int.Parse (Game.firstTNT + Game.secondTNT) - 1).ToString() );
-		GameObject btnTNT = GameObject.Find ("btn_TNT");
-		if(btnTNT)
-			btnTNT.transform.GetChild (1).GetComponent<Text> ().text = (int.Parse (Game.firstTNT + Game.secondTNT)).ToString();
+	public static void DecreaseTNT()
+	{
+		Game.SaveCountTNT((int.Parse(Game.firstTNT + Game.secondTNT) - 1).ToString());
+		GameObject btnTNT = GameObject.Find("btn_TNT");
+		if (btnTNT)
+			btnTNT.transform.GetChild(1).GetComponent<Text>().text = (int.Parse(Game.firstTNT + Game.secondTNT)).ToString();
 	}
 
 	public static void IncreaseTNT(int count){

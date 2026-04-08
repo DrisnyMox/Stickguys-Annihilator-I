@@ -1,12 +1,13 @@
-﻿using AppodealAds.Unity.Api;
-using AppodealAds.Unity.Common;
+﻿//using AppodealAds.Unity.Api;
+//using AppodealAds.Unity.Common;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using System.Collections;
 
 
-public class CarScript : MonoBehaviour, IRewardedVideoAdListener {
+public class CarScript : MonoBehaviour//, IRewardedVideoAdListener 
+{
 
 	WheelJoint2D[] wheelJoints;
 	JointMotor2D frontWheel;
@@ -54,7 +55,7 @@ public class CarScript : MonoBehaviour, IRewardedVideoAdListener {
 	}
 
 	IEnumerator Start () {
-		Appodeal.setRewardedVideoCallbacks(this);
+		//Appodeal.setRewardedVideoCallbacks(this);
 		/*p_HUD.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener ( delegate() {
 			this.Moxol();			
 		} );
@@ -236,14 +237,14 @@ public class CarScript : MonoBehaviour, IRewardedVideoAdListener {
 		
 
 	public void ShowAdvertise(){
-		if(Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)){
-			Appodeal.show (Appodeal.REWARDED_VIDEO);
-		} else if (Appodeal.isLoaded (Appodeal.INTERSTITIAL)) {
-			Appodeal.show (Appodeal.INTERSTITIAL);
-		}
-		Appodeal.setAutoCache(Appodeal.REWARDED_VIDEO, false);
-		Appodeal.initialize(AdvertiseService.appKey, Appodeal.REWARDED_VIDEO);
-		Appodeal.cache(Appodeal.REWARDED_VIDEO);
+		//if(Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)){
+		//	Appodeal.show (Appodeal.REWARDED_VIDEO);
+		//} else if (Appodeal.isLoaded (Appodeal.INTERSTITIAL)) {
+		//	Appodeal.show (Appodeal.INTERSTITIAL);
+		//}
+		//Appodeal.setAutoCache(Appodeal.REWARDED_VIDEO, false);
+		//Appodeal.initialize(AdvertiseService.appKey, Appodeal.REWARDED_VIDEO);
+		//Appodeal.cache(Appodeal.REWARDED_VIDEO);
 	}
 
 	
