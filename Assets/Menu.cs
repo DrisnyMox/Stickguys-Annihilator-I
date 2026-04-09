@@ -151,7 +151,9 @@ public class Menu : MonoBehaviour {
 		p_Levels.SetActive(false);
 		p_MainMenu.SetActive(false);
 		p_BuyTNT.SetActive(false);
+#if UNITY_ANDROID
 		Handheld.Vibrate();
+#endif
 	}
 
 	public void OpenShopTNT() {

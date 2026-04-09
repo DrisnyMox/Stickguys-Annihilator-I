@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using YG;
 
 public static class SaveLoadSystem {
 
@@ -17,6 +18,22 @@ public static class SaveLoadSystem {
     public const string KeyTooltipTNT = "tooltipTNT";
     public const string KeyChmos = "chmos";
     public const string KeySkidko = "skidko";
+
+    static bool IsWebYGActive() {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        return YandexGame.Instance != null;
+#else
+        return false;
+#endif
+    }
+
+    static void SaveProgressYG() {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        if (YandexGame.Instance != null && YandexGame.SDKEnabled) {
+            YandexGame.SaveProgress();
+        }
+#endif
+    }
 
     public static bool HasKey(string key) {
         return PlayerPrefs.HasKey(key);
@@ -40,6 +57,10 @@ public static class SaveLoadSystem {
 
     public static void SaveCoins(int value) {
         PlayerPrefs.SetInt(KeyCoins, value);
+        if (IsWebYGActive()) {
+            YandexGame.savesData.coins = value;
+            SaveProgressYG();
+        }
         Save();
     }
 
@@ -49,6 +70,10 @@ public static class SaveLoadSystem {
 
     public static void SaveGears(int value) {
         PlayerPrefs.SetInt(KeyGears, value);
+        if (IsWebYGActive()) {
+            YandexGame.savesData.gears = value;
+            SaveProgressYG();
+        }
         Save();
     }
 
@@ -60,11 +85,20 @@ public static class SaveLoadSystem {
     public static void SaveTNT(string first, string second) {
         PlayerPrefs.SetString(KeyFirstTNT, first);
         PlayerPrefs.SetString(KeySecondTNT, second);
+        if (IsWebYGActive()) {
+            YandexGame.savesData.firstTNT = first;
+            YandexGame.savesData.secondTNT = second;
+            SaveProgressYG();
+        }
         Save();
     }
 
     public static void SaveGameData(string data) {
         PlayerPrefs.SetString(KeyGameData, data);
+        if (IsWebYGActive()) {
+            YandexGame.savesData.gameData = data;
+            SaveProgressYG();
+        }
     }
 
     public static string LoadGameData() {
@@ -73,6 +107,10 @@ public static class SaveLoadSystem {
 
     public static void SaveAutosData(string data) {
         PlayerPrefs.SetString(KeyGameAuto, data);
+        if (IsWebYGActive()) {
+            YandexGame.savesData.autosData = data;
+            SaveProgressYG();
+        }
     }
 
     public static string LoadAutosData() {
@@ -81,6 +119,10 @@ public static class SaveLoadSystem {
 
     public static void SaveEditorState(bool isOpen) {
         PlayerPrefs.SetString(KeyEditor, isOpen.ToString());
+        if (IsWebYGActive()) {
+            YandexGame.savesData.editorIsOpen = isOpen;
+            SaveProgressYG();
+        }
         Save();
     }
 
@@ -90,6 +132,10 @@ public static class SaveLoadSystem {
 
     public static void SaveSlowMo(bool value) {
         PlayerPrefs.SetString(KeySlow, value.ToString());
+        if (IsWebYGActive()) {
+            YandexGame.savesData.slowMo = value;
+            SaveProgressYG();
+        }
         Save();
     }
 
@@ -99,6 +145,10 @@ public static class SaveLoadSystem {
 
     public static void SaveDistance(float value) {
         PlayerPrefs.SetFloat(KeyDistance, value);
+        if (IsWebYGActive()) {
+            YandexGame.savesData.distance = value;
+            SaveProgressYG();
+        }
         Save();
     }
 
@@ -108,6 +158,10 @@ public static class SaveLoadSystem {
 
     public static void SaveBlood(float value) {
         PlayerPrefs.SetFloat(KeyBlood, value);
+        if (IsWebYGActive()) {
+            YandexGame.savesData.blood = value;
+            SaveProgressYG();
+        }
         Save();
     }
 
@@ -117,6 +171,10 @@ public static class SaveLoadSystem {
 
     public static void SaveLanguage(int value) {
         PlayerPrefs.SetInt(KeyLanguage, value);
+        if (IsWebYGActive()) {
+            YandexGame.savesData.languageIndex = value;
+            SaveProgressYG();
+        }
         Save();
     }
 
@@ -126,6 +184,15 @@ public static class SaveLoadSystem {
 
     public static void SaveString(string key, string value, bool saveNow) {
         PlayerPrefs.SetString(key, value);
+        if (IsWebYGActive()) {
+            if (key == KeyTooltipTNT) YandexGame.savesData.tooltipTNT = value;
+            else if (key == KeyChmos) YandexGame.savesData.chmos = value;
+            else if (key == KeySkidko) YandexGame.savesData.skidko = value;
+            else if (key == "unlocksColor") YandexGame.savesData.unlocksColor = value;
+            else if (key == "bloodActive") YandexGame.savesData.bloodActive = bool.Parse(value);
+
+            SaveProgressYG();
+        }
         if (saveNow) {
             Save();
         }
@@ -133,6 +200,12 @@ public static class SaveLoadSystem {
 
     public static void SaveInt(string key, int value, bool saveNow) {
         PlayerPrefs.SetInt(key, value);
+        if (IsWebYGActive()) {
+            if (key == KeyTNTBonus) YandexGame.savesData.tntBonus = value;
+            else if (key == "boneColor") YandexGame.savesData.boneColorIndex = value;
+
+            SaveProgressYG();
+        }
         if (saveNow) {
             Save();
         }
