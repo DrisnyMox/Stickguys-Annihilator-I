@@ -32,9 +32,6 @@ public class YGSaveSync : MonoBehaviour
 
     void SyncFromYGToPlayerPrefs()
     {
-        if (YandexGame.Instance == null)
-            return;
-
         SavesYG data = YandexGame.savesData;
 
         PlayerPrefs.SetInt(SaveLoadSystem.KeyCoins, data.coins);

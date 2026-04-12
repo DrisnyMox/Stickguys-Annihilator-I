@@ -18,17 +18,17 @@ namespace YG
 
         // Ваши сохранения
         public int coins;
-        public int gears;
+        public int gears = 88;
         public string firstTNT = "0";
         public string secondTNT = "3";
         public string gameData = string.Empty;
         public string autosData = string.Empty;
         public bool editorIsOpen;
-        public bool slowMo;
-        public float distance;
-        public float blood;
+        public bool slowMo = true;
+        public float distance = 7;
+        public float blood = 88;
         public int languageIndex;
-        public int tntBonus = 1;
+        public int tntBonus = 0;
         public string tooltipTNT = string.Empty;
         public string chmos = string.Empty;
         public string skidko = string.Empty;

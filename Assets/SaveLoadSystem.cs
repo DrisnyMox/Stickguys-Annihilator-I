@@ -201,7 +201,7 @@ public static class SaveLoadSystem {
     public static void SaveInt(string key, int value, bool saveNow) {
         PlayerPrefs.SetInt(key, value);
         if (IsWebYGActive()) {
-            if (key == KeyTNTBonus) YandexGame.savesData.tntBonus = value;
+            if (key == KeyTNTBonus) YandexGame.savesData.tntBonus = value;// == 1 ? false : true;
             else if (key == "boneColor") YandexGame.savesData.boneColorIndex = value;
 
             SaveProgressYG();

@@ -4,6 +4,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
+using System;
+using mixpanel;
 
 public class HUD : MonoBehaviour {
 
@@ -30,6 +32,8 @@ public class HUD : MonoBehaviour {
 	[SerializeField] Text txtPricePlacedCar;
 	[SerializeField] BoneColor boneColor;
 	[SerializeField] GameObject btnSwitchBackground;
+	[Space]
+	[SerializeField] Button btnOpenEditor;
 
 	GameObject car;
 	BackgroundsKeeper backKeeper;
@@ -59,9 +63,13 @@ public class HUD : MonoBehaviour {
         {
             DebugLog.Add(e.ToString());
         }
+
+		btnOpenEditor.onClick.AddListener(OpenEditorCar_Clicked);
 	}
 
-	IEnumerator Start()
+    
+
+    IEnumerator Start()
 	{
 		//      try
 		//{
@@ -116,9 +124,10 @@ public class HUD : MonoBehaviour {
 		CheckAuto();
 		UpdateTNTView();
 
+		var ui = GameObject.Find("UI").transform;
+
 		if (!SaveLoadSystem.HasKey(SaveLoadSystem.KeyTooltipTNT))
 		{
-			Transform ui = GameObject.Find("UI").transform;
 			//ui.GetChild(ui.childCount - 2).gameObject.SetActive(true);
 			var txtTooltipTNT = GameObject.Find("txt_TooltipTNT")?.GetComponent<Text>();
 			if (txtTooltipTNT)
@@ -146,18 +155,20 @@ public class HUD : MonoBehaviour {
 		}
 		else
 			btnSwitchBackground.SetActive(false);
-		//}
-		//catch (System.Exception e)
-		//{
-		//	DebugLog.Add(e.ToString());
-		//	Debug.LogError(e);
-		//}
+
+		
+		var txtExp = ui.GetChild(ui.childCount - 1).GetComponent<Text>();
+		txtExp.text = $"{Settings.lng.txt_ExpShort} {Levels.currentExperience[numberLevel]}";
+
 
 		yield return null;
 
 		p_Autos.SetActive(false);
 		CheckFire.Check();
-
+		Mixpanel.Track($"StartLevel:{numberLevel}");
+		yield return null;
+		Mixpanel.Track($"SelectCar:{idAuto}");
+		
 	}//_________________________________________________________________________________
 
 	void UpdateTNTView()
@@ -336,7 +347,13 @@ public class HUD : MonoBehaviour {
 		GameObject.Find ("txt_Menu").GetComponent<Text> ().text = Settings.lng.txt_Menu;
 	}
 
-	public IEnumerator OpenEditorCar(){
+
+	private void OpenEditorCar_Clicked()
+	{
+		OpenEditorCar();
+	}
+
+	public void OpenEditorCar(){
 
 		if (SaveLoadSystem.HasKey (SaveLoadSystem.KeySkidko)) {
 			SaveLoadSystem.DeleteKey (SaveLoadSystem.KeySkidko);
@@ -358,7 +375,8 @@ public class HUD : MonoBehaviour {
 			Levels.SaveEditor ();
 			GameObject.Find ("btn_Add Car").transform.GetChild (1).gameObject.SetActive (false);
 		}/**/
-		yield return null;
+
+		//yield return null;
 	}
 
 	/*IEnumerator RunCor(){

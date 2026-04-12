@@ -9,14 +9,19 @@ public class AudioContrCar : MonoBehaviour {
 	AudioSource source;
 	WheelJoint2D wheel;
 	// Use this for initialization
-	void Start () {
-		wheel = GetComponent<WheelJoint2D> ();
+	void Start()
+	{
+		wheel = GetComponent<WheelJoint2D>();
 		maxMotor = wheel.motor.maxMotorTorque;
+#if !UNITY_WEBGL
 		curvePitch.AddKey (0, 0.8f);
-		curvePitch.AddKey (15000, 3);
-		source = GetComponent<AudioSource> ();
+#else
+		curvePitch.AddKey(0, 1f);
+#endif
+		curvePitch.AddKey(15000, 3);
+		source = GetComponent<AudioSource>();
 		source.clip = s_motor;
-		source.Play ();
+		source.Play();
 	}
 	
 	// Update is called once per frame
