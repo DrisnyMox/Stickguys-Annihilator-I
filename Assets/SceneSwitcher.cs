@@ -11,6 +11,12 @@ public class SceneSwitcher
         OpenScene("Menu");
     }
 
+    [MenuItem("Stickguys/Scenes/Loading")]
+    public static void OpenLoadingScene()
+    {
+        OpenScene("Loading");
+    }
+
     [MenuItem("Stickguys/Scenes/Editor Car")]
     public static void OpenEditorCarScene()
     {

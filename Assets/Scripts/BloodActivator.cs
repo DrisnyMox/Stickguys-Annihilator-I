@@ -15,8 +15,7 @@ public class BloodActivator : MonoBehaviour {
 			return bool.Parse(PlayerPrefs.GetString ("bloodActive"));
 		}
 		set { 
-			PlayerPrefs.SetString ("bloodActive", value.ToString ());
-			PlayerPrefs.Save ();
+			SaveLoadSystem.SaveString("bloodActive", value.ToString(), true);
 		}
 	}
 
