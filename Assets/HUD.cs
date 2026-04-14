@@ -146,7 +146,11 @@ public class HUD : MonoBehaviour {
 		GameObject txtActivate = GameObject.Find("txt_Activate");
 		if (txtActivate)
 			txtActivate.GetComponent<Text>().text = Settings.lng.txt_Activate;
-		txtPricePlacedCar.text = (80 * Game.GetNumberCurrentLevel()).ToString() + " " + Settings.lng.txt_PlacedCar;
+		txtPricePlacedCar.text = $"{Game.GetPlacedPrice()} {Settings.lng.txt_PlacedCar}";
+		if (Game.GetPlacedPrice() == 0)
+		{
+			txtPricePlacedCar.text = "Вниз колесами";
+		}
 		backKeeper = FindObjectOfType<BackgroundsKeeper>();
 		if (backKeeper)
 		{
@@ -221,22 +225,17 @@ public class HUD : MonoBehaviour {
 		}
 	}//_________________________________________________________________________________
 
-	public void SelectAuto (int id) {
-        try
-        {
-            selectedAuto = id;
-            if (Levels.isOpenAuto[id])
-            {
-                SpawnAuto(id);
-            }
-            else
-            {
-                OpenBuyDialog();
-            }
-        } catch (System.Exception e)
-        {
-            //DebugLog.Add(e.ToString());
-        }
+	public void SelectAuto(int id)
+	{
+		selectedAuto = id;
+		if (Levels.isOpenAuto[id])
+		{
+			SpawnAuto(id);
+		}
+		else
+		{
+			OpenBuyDialog();
+		}
 	}
 
 	public void SelectAutoCustom(int id){
@@ -291,6 +290,10 @@ public class HUD : MonoBehaviour {
 
 	public void OpenAutos() {
 		p_Autos.SetActive (true);
+
+		var scrollbar = p_Autos.transform.Find("Scrollbar");
+		scrollbar.GetComponent<Scrollbar>().value = 1;
+
 		AdvertiseService.ShowAdmobBottom ();
 		UpdateCoins ();
 		ChangeLanguage ();
@@ -331,7 +334,7 @@ public class HUD : MonoBehaviour {
 
 	void UpdateCoins(){
 		int id = p_Autos.transform.childCount - 1;
-		p_Autos.transform.GetChild (id).GetChild (0).GetComponent<Text> ().text = "Coins: "+Game.currentCoins.ToString ();
+		p_Autos.transform.GetChild(id).GetChild(0).GetComponent<Text>().text = $"{Settings.lng.txt_Coins} {Game.currentCoins}";
 	}
 
 	//=====================================================================================
@@ -487,7 +490,7 @@ public class HUD : MonoBehaviour {
 	}
 
 	public void PlacedCar(){
-		int pricePlaced = 80 * Game.GetNumberCurrentLevel ();
+		int pricePlaced = Game.GetPlacedPrice();
 		if (Game.currentCoins > pricePlaced) {
 			Game.currentCoins -= pricePlaced;
 			Game.SaveCoins ();

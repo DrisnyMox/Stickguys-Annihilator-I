@@ -1,0 +1,29 @@
+{
+    "intExample": 5,
+    "strExample": "Hello!",
+    "boolExample": [
+        false,
+        false,
+        false,
+        false
+    ],
+    "idSave": 462,
+    "coins": 182913,
+    "gears": 82,
+    "firstTNT": "2",
+    "secondTNT": "06",
+    "gameData": "0*True;4130*True;0*False;17395*True;27090*True;0*True;43976*True;103304*True;279261*True;532551*True;0*False;0*False;0*False;",
+    "autosData": "True;False;True;False;False;False;True;False;False;False;",
+    "editorIsOpen": false,
+    "slowMo": true,
+    "distance": 7.0,
+    "blood": 88.0,
+    "languageIndex": 0,
+    "tntBonus": 1,
+    "tooltipTNT": "",
+    "chmos": "",
+    "skidko": "",
+    "boneColorIndex": 2,
+    "unlocksColor": "True;False;True;False;",
+    "bloodActive": true
+}

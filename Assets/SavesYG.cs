@@ -3,9 +3,13 @@ namespace YG
 {
     public partial class SavesYG
     {
-        
+
         // Ваши сохранения
+#if DEV
+        public int coins = 10000000;
+#else
         public int coins;
+#endif
         public int gears = 88;
         public string firstTNT = "0";
         public string secondTNT = "3";

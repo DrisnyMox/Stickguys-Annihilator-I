@@ -3,16 +3,20 @@ using System.Collections;
 
 public class ClickScript : MonoBehaviour {
 
-	public bool clickedIs = false;
+	public bool ClickedIs { get; set; } = false;
+	public bool ClikedOnUI { get; set; } = false;
 	// Use this for initialization
 	public void OnMouseDown () {
-		clickedIs = true;
-        DebugLog.Add("click down");
+		ClickedIs = true;
+		ClikedOnUI = true;
+
+		DebugLog.Add("click down");
 	}
 	
 	// Update is called once per frame
 	public void OnMouseUp () {
-		clickedIs = false;
-        DebugLog.Add("click up");
+		ClickedIs = false;
+		ClikedOnUI = false;
+		DebugLog.Add("click up");
     }
 }

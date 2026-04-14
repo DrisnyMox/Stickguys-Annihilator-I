@@ -58,7 +58,7 @@ public class Menu : MonoBehaviour {
 		Levels.prices[3] = 1900;
 		Levels.prices[4] = 6000;
 		Levels.prices[5] = 8000;
-		Levels.prices[6] = 18000;
+		Levels.prices[6] = 11000;
 		Levels.prices[7] = 88000;
 		Levels.prices[8] = 98000;
 		Levels.prices[9] = 333333;
@@ -138,7 +138,8 @@ public class Menu : MonoBehaviour {
 			SaveLoadSystem.DeleteAll();
 			YandexGame.SaveProgress();
 			SaveLoadSystem.Save();
-			
+
+
 			Debug.Log("All saves were deleted.");
 		}
 	}

@@ -23,6 +23,11 @@ public static class Game {
 		return SceneManager.GetActiveScene ().buildIndex;
 	}
 
+	public static int GetPlacedPrice()
+    {
+		return (80 * GetNumberCurrentLevel()) - 80;
+	}
+
 	public static void LoadGears(){
 		
 		gears = SaveLoadSystem.LoadGears(88);
