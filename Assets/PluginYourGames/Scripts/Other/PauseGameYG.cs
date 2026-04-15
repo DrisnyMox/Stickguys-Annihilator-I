@@ -186,10 +186,10 @@ namespace YG
             SceneManager.sceneLoaded -= OnSceneLoaded;
 
             if (editTimeScale)
-                Time.timeScale = timeScale_save;
+                Time.timeScale = 1;
 
             if (editAudioPause)
-                AudioListener.pause = audioPause_save;
+                AudioListener.pause = false;
 
             if (editCursor)
             {
@@ -197,7 +197,7 @@ namespace YG
             }
 
             if (editEventSystem && eventSystem)
-                eventSystem.enabled = eventSystem_save;
+                eventSystem.enabled = true;
 
             Destroy(gameObject);
         }

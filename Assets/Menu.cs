@@ -37,6 +37,7 @@ public class Menu : MonoBehaviour {
 	ItemColorBone currentItemBoneColor;
 
 	void Awake() {
+
 		motors = Motors;
 		p_MainMenu.SetActive(true);
 		p_Levels.SetActive(false);
