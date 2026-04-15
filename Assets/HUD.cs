@@ -393,6 +393,7 @@ public class HUD : MonoBehaviour {
 		p_Pause.gameObject.SetActive (false);
 	}
 	public void LoadMenu(){
+		
 		Menu.mode = "levels";
 		Levels.currentExperience[numberLevel] = 0;
 		Camera.main.GetComponent<Restart> ().LoadMenu ();

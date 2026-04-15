@@ -96,6 +96,8 @@ public class Menu : MonoBehaviour {
 
 	void Start() {
 
+		YandexGame.FullscreenShow();
+
 		Game.LoadCoins();
 		Game.LoadCountTNT();
 		Levels.LoadData();
@@ -151,6 +153,7 @@ public class Menu : MonoBehaviour {
 		p_Settings.SetActive(false);
 		ChangeLanguage();
 		UpdateCoins();
+		print($"{Time.timeScale} ###########");
 	}
 
 	public void OpenMainMenu() {
