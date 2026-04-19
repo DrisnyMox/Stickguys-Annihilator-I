@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System.Collections;
+using mixpanel;
+using YG;
 
 public class Menu : MonoBehaviour {
 
@@ -36,6 +37,7 @@ public class Menu : MonoBehaviour {
 	ItemColorBone currentItemBoneColor;
 
 	void Awake() {
+
 		motors = Motors;
 		p_MainMenu.SetActive(true);
 		p_Levels.SetActive(false);
@@ -56,7 +58,7 @@ public class Menu : MonoBehaviour {
 		Levels.prices[3] = 1900;
 		Levels.prices[4] = 6000;
 		Levels.prices[5] = 8000;
-		Levels.prices[6] = 18000;
+		Levels.prices[6] = 11000;
 		Levels.prices[7] = 88000;
 		Levels.prices[8] = 98000;
 		Levels.prices[9] = 333333;
@@ -93,6 +95,9 @@ public class Menu : MonoBehaviour {
 	}
 
 	void Start() {
+
+		YandexGame.FullscreenShow();
+
 		Game.LoadCoins();
 		Game.LoadCountTNT();
 		Levels.LoadData();
@@ -102,14 +107,19 @@ public class Menu : MonoBehaviour {
 		//Settings.current.moreGames = GameObject.Find ("txt_MoreGames").GetComponent<Text> ();
 		Settings.Texto();
 
-		if (!SaveLoadSystem.HasKey(SaveLoadSystem.KeyTNTBonus)) {
-			TNT.IncreaseTNT(330);
-			SaveLoadSystem.SaveInt(SaveLoadSystem.KeyTNTBonus, 1, true);
+		if (SaveLoadSystem.HasKey(SaveLoadSystem.KeyTNTBonus))
+		{
+			if (PlayerPrefs.GetInt(SaveLoadSystem.KeyTNTBonus) == 0)
+			{
+				TNT.IncreaseTNT(330);
+				SaveLoadSystem.SaveInt(SaveLoadSystem.KeyTNTBonus, 1, true);
+			}
 		}
 
 #if !UNITY_ANDROID
 		btnQuit.gameObject.SetActive(false);
 #endif
+		Mixpanel.Init();
 	}
 
 	void Update()
@@ -121,12 +131,18 @@ public class Menu : MonoBehaviour {
 			SaveLoadSystem.SaveCoins(Game.currentCoins);
 			//SaveLoadSystem.SaveGameData(string.Empty);
 			//SaveLoadSystem.SaveAutosData(string.Empty);
-			//SaveLoadSystem.Save();
+			SaveLoadSystem.Save();
 		}
 
 		if (Input.GetKeyDown(KeyCode.D))
 		{
+            YandexGame.savesData = new();
 			SaveLoadSystem.DeleteAll();
+			YandexGame.SaveProgress();
+			SaveLoadSystem.Save();
+
+
+			Debug.Log("All saves were deleted.");
 		}
 	}
 
@@ -137,6 +153,7 @@ public class Menu : MonoBehaviour {
 		p_Settings.SetActive(false);
 		ChangeLanguage();
 		UpdateCoins();
+		print($"{Time.timeScale} ###########");
 	}
 
 	public void OpenMainMenu() {
@@ -147,20 +164,25 @@ public class Menu : MonoBehaviour {
 	}
 
 	public void OpenSettings() {
+		Mixpanel.Track("Settings");
 		p_Settings.SetActive(true);
 		p_Levels.SetActive(false);
 		p_MainMenu.SetActive(false);
 		p_BuyTNT.SetActive(false);
+#if UNITY_ANDROID
 		Handheld.Vibrate();
+#endif
 	}
 
 	public void OpenShopTNT() {
+		Mixpanel.Track("OpenTNT");
 		txtCountTNT.text = "x" + (int.Parse(Game.firstTNT + Game.secondTNT)).ToString();
 		p_BuyTNT.SetActive(true);
 		GameObject.Find("txt TNT Shop").GetComponent<Text>().text = Settings.lng.txt_tntShop;
 	}
 
 	public void OpenEditorVehicle() {
+		Mixpanel.Track("Editor:Menu");
 		SceneManager.LoadScene("Editor Car");
 	}
 
@@ -200,10 +222,12 @@ public class Menu : MonoBehaviour {
 		txtCountTNT.text = "x" + (int.Parse(Game.firstTNT + Game.secondTNT)).ToString();
 		UpdateCoins();
 		Game.SaveCoins();
+		Mixpanel.Track($"BuyTNT{countTNT}");
 	}
 
 
 	public void LoadLevel(int lvl) {
+
 		Levels.isOpen[0] = true;
 		Levels.isOpen[1] = true;
 		Levels.isOpenAuto[0] = true;
@@ -218,6 +242,7 @@ public class Menu : MonoBehaviour {
 	}
 
 	public void OpenBuyDialog() {
+
 		p_BuyDialog.SetActive(true);
 		GameObject.Find("txt-AreYouSure").GetComponent<Text>().text = Settings.lng.txt_AreYouSure;
 		GameObject.Find("Text No").GetComponent<Text>().text = Settings.lng.txt_No;
@@ -230,6 +255,7 @@ public class Menu : MonoBehaviour {
 	}
 
 	public void BuyLevel() {
+		Mixpanel.Track($"BuyLevel{selectedLevel}");
 		Levels.isOpen[selectedLevel] = true;
 		Game.currentCoins -= Levels.prices[selectedLevel];
 		btnLevels[selectedLevel].transform.GetChild(1).gameObject.SetActive(false);
@@ -287,6 +313,7 @@ public class Menu : MonoBehaviour {
 
 	#region Color Bones
 	public void OpenColorsBone(){
+		Mixpanel.Track($"OpenColorsBone");
 		p_ColorsBones.SetActive (true);
 		GameObject.Find ("txt Title Color Bones").GetComponent<Text> ().text = Settings.lng.txt_ColorBones;
 		foreach (ItemColorBone item in itemsBoneColor) {
@@ -310,6 +337,7 @@ public class Menu : MonoBehaviour {
 	}
 
 	public void BuyColorBone(){
+		Mixpanel.Track($"BuyColorBone{currentItemBoneColor.index}");
 		boneColor.unlockBones [currentItemBoneColor.index] = true;
 		boneColor.currentColor = boneColor.colorsBone [currentItemBoneColor.index];
 		foreach (ItemColorBone item in itemsBoneColor) {

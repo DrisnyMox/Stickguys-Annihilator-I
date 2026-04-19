@@ -4,6 +4,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
+using System;
+using mixpanel;
 
 public class HUD : MonoBehaviour {
 
@@ -30,6 +32,8 @@ public class HUD : MonoBehaviour {
 	[SerializeField] Text txtPricePlacedCar;
 	[SerializeField] BoneColor boneColor;
 	[SerializeField] GameObject btnSwitchBackground;
+	[Space]
+	[SerializeField] Button btnOpenEditor;
 
 	GameObject car;
 	BackgroundsKeeper backKeeper;
@@ -59,9 +63,13 @@ public class HUD : MonoBehaviour {
         {
             DebugLog.Add(e.ToString());
         }
+
+		btnOpenEditor.onClick.AddListener(OpenEditorCar_Clicked);
 	}
 
-	IEnumerator Start()
+    
+
+    IEnumerator Start()
 	{
 		//      try
 		//{
@@ -116,9 +124,10 @@ public class HUD : MonoBehaviour {
 		CheckAuto();
 		UpdateTNTView();
 
+		var ui = GameObject.Find("UI").transform;
+
 		if (!SaveLoadSystem.HasKey(SaveLoadSystem.KeyTooltipTNT))
 		{
-			Transform ui = GameObject.Find("UI").transform;
 			//ui.GetChild(ui.childCount - 2).gameObject.SetActive(true);
 			var txtTooltipTNT = GameObject.Find("txt_TooltipTNT")?.GetComponent<Text>();
 			if (txtTooltipTNT)
@@ -137,7 +146,11 @@ public class HUD : MonoBehaviour {
 		GameObject txtActivate = GameObject.Find("txt_Activate");
 		if (txtActivate)
 			txtActivate.GetComponent<Text>().text = Settings.lng.txt_Activate;
-		txtPricePlacedCar.text = (80 * Game.GetNumberCurrentLevel()).ToString() + " " + Settings.lng.txt_PlacedCar;
+		txtPricePlacedCar.text = $"{Game.GetPlacedPrice()} {Settings.lng.txt_PlacedCar}";
+		if (Game.GetPlacedPrice() == 0)
+		{
+			txtPricePlacedCar.text = "Вниз колесами";
+		}
 		backKeeper = FindObjectOfType<BackgroundsKeeper>();
 		if (backKeeper)
 		{
@@ -146,18 +159,20 @@ public class HUD : MonoBehaviour {
 		}
 		else
 			btnSwitchBackground.SetActive(false);
-		//}
-		//catch (System.Exception e)
-		//{
-		//	DebugLog.Add(e.ToString());
-		//	Debug.LogError(e);
-		//}
+
+		
+		var txtExp = ui.GetChild(ui.childCount - 1).GetComponent<Text>();
+		txtExp.text = $"{Settings.lng.txt_ExpShort} {Levels.currentExperience[numberLevel]}";
+
 
 		yield return null;
 
 		p_Autos.SetActive(false);
 		CheckFire.Check();
-
+		Mixpanel.Track($"StartLevel:{numberLevel}");
+		yield return null;
+		Mixpanel.Track($"SelectCar:{idAuto}");
+		
 	}//_________________________________________________________________________________
 
 	void UpdateTNTView()
@@ -210,22 +225,17 @@ public class HUD : MonoBehaviour {
 		}
 	}//_________________________________________________________________________________
 
-	public void SelectAuto (int id) {
-        try
-        {
-            selectedAuto = id;
-            if (Levels.isOpenAuto[id])
-            {
-                SpawnAuto(id);
-            }
-            else
-            {
-                OpenBuyDialog();
-            }
-        } catch (System.Exception e)
-        {
-            //DebugLog.Add(e.ToString());
-        }
+	public void SelectAuto(int id)
+	{
+		selectedAuto = id;
+		if (Levels.isOpenAuto[id])
+		{
+			SpawnAuto(id);
+		}
+		else
+		{
+			OpenBuyDialog();
+		}
 	}
 
 	public void SelectAutoCustom(int id){
@@ -280,6 +290,10 @@ public class HUD : MonoBehaviour {
 
 	public void OpenAutos() {
 		p_Autos.SetActive (true);
+
+		var scrollbar = p_Autos.transform.Find("Scrollbar");
+		scrollbar.GetComponent<Scrollbar>().value = 1;
+
 		AdvertiseService.ShowAdmobBottom ();
 		UpdateCoins ();
 		ChangeLanguage ();
@@ -320,7 +334,7 @@ public class HUD : MonoBehaviour {
 
 	void UpdateCoins(){
 		int id = p_Autos.transform.childCount - 1;
-		p_Autos.transform.GetChild (id).GetChild (0).GetComponent<Text> ().text = "Coins: "+Game.currentCoins.ToString ();
+		p_Autos.transform.GetChild(id).GetChild(0).GetComponent<Text>().text = $"{Settings.lng.txt_Coins} {Game.currentCoins}";
 	}
 
 	//=====================================================================================
@@ -336,7 +350,13 @@ public class HUD : MonoBehaviour {
 		GameObject.Find ("txt_Menu").GetComponent<Text> ().text = Settings.lng.txt_Menu;
 	}
 
-	public IEnumerator OpenEditorCar(){
+
+	private void OpenEditorCar_Clicked()
+	{
+		OpenEditorCar();
+	}
+
+	public void OpenEditorCar(){
 
 		if (SaveLoadSystem.HasKey (SaveLoadSystem.KeySkidko)) {
 			SaveLoadSystem.DeleteKey (SaveLoadSystem.KeySkidko);
@@ -358,7 +378,8 @@ public class HUD : MonoBehaviour {
 			Levels.SaveEditor ();
 			GameObject.Find ("btn_Add Car").transform.GetChild (1).gameObject.SetActive (false);
 		}/**/
-		yield return null;
+
+		//yield return null;
 	}
 
 	/*IEnumerator RunCor(){
@@ -372,6 +393,7 @@ public class HUD : MonoBehaviour {
 		p_Pause.gameObject.SetActive (false);
 	}
 	public void LoadMenu(){
+		
 		Menu.mode = "levels";
 		Levels.currentExperience[numberLevel] = 0;
 		Camera.main.GetComponent<Restart> ().LoadMenu ();
@@ -469,7 +491,7 @@ public class HUD : MonoBehaviour {
 	}
 
 	public void PlacedCar(){
-		int pricePlaced = 80 * Game.GetNumberCurrentLevel ();
+		int pricePlaced = Game.GetPlacedPrice();
 		if (Game.currentCoins > pricePlaced) {
 			Game.currentCoins -= pricePlaced;
 			Game.SaveCoins ();

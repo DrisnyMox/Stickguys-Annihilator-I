@@ -122,24 +122,24 @@ public class CarScript : MonoBehaviour//, IRewardedVideoAdListener
 			angleCar = angleCar - 360;
 		}
 
-		if (ControlCar[0].clickedIs == true)
+		if (ControlCar[0].ClickedIs == true)
 		{
             backWheel.motorSpeed = Mathf.Clamp(backWheel.motorSpeed - (acceleration - gravity * Mathf.PI * (angleCar / 180) * 80) * Time.deltaTime, maxSpeed, maxBackSpeed);
         }
-		if ((ControlCar[0].clickedIs == false && backWheel.motorSpeed < 0) || (ControlCar[0].clickedIs == false && backWheel.motorSpeed == 0 && angleCar < 0))
+		if ((ControlCar[0].ClickedIs == false && backWheel.motorSpeed < 0) || (ControlCar[0].ClickedIs == false && backWheel.motorSpeed == 0 && angleCar < 0))
 		{
 			backWheel.motorSpeed = Mathf.Clamp(backWheel.motorSpeed - (deacceleration - gravity * Mathf.PI * (angleCar / 180) * 80) * Time.deltaTime, maxSpeed, 0);
 		}
-		else if ((ControlCar[0].clickedIs == false && backWheel.motorSpeed > 0) || (ControlCar[0].clickedIs == false && backWheel.motorSpeed == 0 && angleCar > 0))
+		else if ((ControlCar[0].ClickedIs == false && backWheel.motorSpeed > 0) || (ControlCar[0].ClickedIs == false && backWheel.motorSpeed == 0 && angleCar > 0))
 		{
 			backWheel.motorSpeed = Mathf.Clamp(backWheel.motorSpeed - (-deacceleration - gravity * Mathf.PI * (angleCar / 180) * 80) * Time.deltaTime, 0, maxBackSpeed);
 		}
 
-		if (ControlCar[1].clickedIs == true && backWheel.motorSpeed > 0)
+		if (ControlCar[1].ClickedIs == true && backWheel.motorSpeed > 0)
 		{
 			backWheel.motorSpeed = Mathf.Clamp(backWheel.motorSpeed - brakeForce * Time.deltaTime, 0, maxBackSpeed);
 		}
-		else if (ControlCar[1].clickedIs == true && backWheel.motorSpeed < 0)
+		else if (ControlCar[1].ClickedIs == true && backWheel.motorSpeed < 0)
 		{
 			backWheel.motorSpeed = Mathf.Clamp(backWheel.motorSpeed + brakeForce * Time.deltaTime, maxSpeed, 0);
 		}
@@ -152,8 +152,8 @@ public class CarScript : MonoBehaviour//, IRewardedVideoAdListener
 			}
 		}
 
-		if (ControlCar [0].clickedIs == true) {
-			if (isGas == false && Game.currentCoins > 800 ) {
+		if (ControlCar [0].ClickedIs == true) {
+			if (isGas == false && Game.currentCoins >= Game.GetPlacedPrice()) {
 				p_HUD.transform.GetChild (3).gameObject.SetActive (true);
 				CheckFire.Check ();
 			}
@@ -247,11 +247,17 @@ public class CarScript : MonoBehaviour//, IRewardedVideoAdListener
 		//Appodeal.cache(Appodeal.REWARDED_VIDEO);
 	}
 
-	
 
-	
+    private void Update()
+    {
+		if (!ControlCar[0].ClikedOnUI)
+		{
+			ControlCar[0].ClickedIs = Input.GetKey(KeyCode.Space);
+		}
+    }
 
-	public float GetTotalMass(){
+
+    public float GetTotalMass(){
 		float massTotal = 0;
 		if (customCar) {
 			for (int i = 0; i < transform.childCount; i++) {
@@ -332,6 +338,6 @@ public class CarScript : MonoBehaviour//, IRewardedVideoAdListener
 
 	public void onRewardedVideoShowFailed()
 	{
-		throw new System.NotImplementedException();
+
 	}
 }

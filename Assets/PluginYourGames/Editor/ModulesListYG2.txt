@@ -1,0 +1,4 @@
+Authorization v1.023
+Fullscreen v1.0
+InterstitialAdv v1.02
+Storage v1.021

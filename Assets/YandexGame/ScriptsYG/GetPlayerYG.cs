@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+#if Localization_yg
 using YG.Utils.Lang;
-#if YG_TEXT_MESH_PRO
+#endif
+#if TMP_YG2
 using TMPro;
 #endif
 
@@ -9,79 +11,81 @@ namespace YG
 {
     public class GetPlayerYG : MonoBehaviour
     {
-        public Text textPlayerName;
-#if YG_TEXT_MESH_PRO
-        public TMP_Text TMPPlayerName;
+        public Text playerNameText;
+        public ImageLoadYG photoImageLoad;
+#if TMP_YG2
+        public TMP_Text playerNameTMP;
 #endif
-        public ImageLoadYG imageLoadPlayerPhoto;
-
-        private InfoYG info { get => YandexGame.Instance.infoYG; }
+        public Texture2D unauthorizedTexture;
 
         private void OnEnable()
         {
-            YandexGame.GetDataEvent += GetPlayerData;
-            YandexGame.SwitchLangEvent += GetName;
-
-            if (YandexGame.SDKEnabled == true)
-            {
-                GetPlayerData();
-            }
+            YG2.onGetSDKData += DrawPlayerData;
+#if Localization_yg
+            YG2.onSwitchLang += DrawName;
+#endif
+            if (YG2.isSDKEnabled)
+                DrawPlayerData();
         }
 
         private void OnDisable()
         {
-            YandexGame.GetDataEvent -= GetPlayerData;
-            YandexGame.SwitchLangEvent -= GetName;
-        }
-
-        void GetPlayerData()
-        {
-            GetPhoto();
-
-            if (textPlayerName != null)
-            {
-                if (YandexGame.playerName == "unauthorized")
-                    textPlayerName.text = LangMethods.UnauthorizedTextTranslate(info);
-                else if (YandexGame.playerName == "anonymous")
-                    textPlayerName.text = LangMethods.IsHiddenTextTranslate(info);
-                else textPlayerName.text = YandexGame.playerName;
-            }
-#if YG_TEXT_MESH_PRO
-            else if (TMPPlayerName != null)
-            {
-                if (YandexGame.playerName == "unauthorized")
-                    TMPPlayerName.text = LangMethods.UnauthorizedTextTranslate(info);
-                else if (YandexGame.playerName == "anonymous")
-                    TMPPlayerName.text = LangMethods.IsHiddenTextTranslate(info);
-                else TMPPlayerName.text = YandexGame.playerName;
-            }
+            YG2.onGetSDKData -= DrawPlayerData;
+#if Localization_yg
+            YG2.onSwitchLang -= DrawName;
 #endif
         }
 
-        void GetPhoto()
+        private void DrawPlayerData()
         {
-            if (imageLoadPlayerPhoto != null && YandexGame.auth)
-                imageLoadPlayerPhoto.Load(YandexGame.playerPhoto);
+            DrawPhoto();
+#if Localization_yg
+            DrawName(YG2.lang);
+#else
+            DrawName(string.Empty);
+#endif
         }
 
-        public void GetName(string lang)
+        private void DrawPhoto()
         {
-            if (textPlayerName != null)
+            if (photoImageLoad != null && YG2.player.auth)
             {
-                if (YandexGame.playerName == "unauthorized")
-                    textPlayerName.text = LangMethods.UnauthorizedTextTranslate(lang);
-                else if (YandexGame.playerName == "anonymous")
-                    textPlayerName.text = LangMethods.IsHiddenTextTranslate(lang);
-                else textPlayerName.text = YandexGame.playerName;
+                photoImageLoad.Load(YG2.player.photo);
             }
-#if YG_TEXT_MESH_PRO
-            if (TMPPlayerName != null)
+            else if (unauthorizedTexture)
             {
-                if (YandexGame.playerName == "unauthorized")
-                    TMPPlayerName.text = LangMethods.UnauthorizedTextTranslate(lang);
-                else if (YandexGame.playerName == "anonymous")
-                    TMPPlayerName.text = LangMethods.IsHiddenTextTranslate(lang);
-                else TMPPlayerName.text = YandexGame.playerName;
+                photoImageLoad.SetTexture(unauthorizedTexture);
+            }
+        }
+
+        public void DrawName(string lang)
+        {
+            if (playerNameText != null)
+            {
+#if Localization_yg
+                if (YG2.player.name == "unauthorized")
+                    playerNameText.text = UtilsLang.UnauthorizedTextTranslate(lang);
+                else if (YG2.player.name == InfoYG.ANONYMOUS)
+                    playerNameText.text = UtilsLang.IsHiddenTextTranslate(lang);
+                else
+                    playerNameText.text = YG2.player.name;
+#else
+                    playerNameText.text = YG2.player.name;
+#endif
+            }
+#if TMP_YG2
+            if (playerNameTMP != null)
+            {
+#if Localization_yg
+                if (YG2.player.name == "unauthorized")
+                    playerNameTMP.text = UtilsLang.UnauthorizedTextTranslate(lang);
+                else if (YG2.player.name == InfoYG.ANONYMOUS)
+                    playerNameTMP.text = UtilsLang.IsHiddenTextTranslate(lang);
+                else
+                    playerNameTMP.text = YG2.player.name;
+#else
+                    playerNameTMP.text = YG2.player.name;
+#endif
             }
 #endif
         }
