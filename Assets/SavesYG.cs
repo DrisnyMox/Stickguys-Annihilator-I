@@ -3,8 +3,6 @@ namespace YG
 {
     public partial class SavesYG
     {
-
-        // Ваши сохранения
 #if DEV
         public int coins = 10000000;
 #else

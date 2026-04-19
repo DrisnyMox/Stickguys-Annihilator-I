@@ -67,12 +67,8 @@ public class HUD : MonoBehaviour {
 		btnOpenEditor.onClick.AddListener(OpenEditorCar_Clicked);
 	}
 
-    
-
     IEnumerator Start()
 	{
-		//      try
-		//{
 		tntSelected = false;
 		Game.LoadGears();
 		Levels.LoadEditor();
@@ -93,7 +89,6 @@ public class HUD : MonoBehaviour {
 
 		numberLevel = Game.GetNumberCurrentLevel();//GameObject.Find ("Ragdoll Pafos").GetComponent<ComponentMenager> ().numberLevel;
 		car = GameObject.Find("Car");
-		//print($"{car} --------------");
 		if (currentCarIsCustom)
 		{
 			Destroy(car);
@@ -163,7 +158,6 @@ public class HUD : MonoBehaviour {
 		
 		var txtExp = ui.GetChild(ui.childCount - 1).GetComponent<Text>();
 		txtExp.text = $"{Settings.lng.txt_ExpShort} {Levels.currentExperience[numberLevel]}";
-
 
 		yield return null;
 
