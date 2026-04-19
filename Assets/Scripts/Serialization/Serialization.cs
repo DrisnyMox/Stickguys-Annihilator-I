@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
+using System.Text;
 
 public class Serialization {
 
@@ -21,6 +22,18 @@ public class Serialization {
 		public int previewHeight = 0;
 		public string binaryCarData = string.Empty;
 		public string previewPngData = string.Empty;
+	}
+
+	[System.Serializable]
+	class CarsCloudData {
+		public int version = 1;
+		public List<CarCloudEntry> cars = new List<CarCloudEntry>();
+	}
+
+	[System.Serializable]
+	class CarCloudEntry {
+		public string name = string.Empty;
+		public string jsonBase64 = string.Empty;
 	}
 
 	public static void Save(SerializableCar car) {
@@ -44,10 +57,12 @@ public class Serialization {
 
 		string json = JsonUtility.ToJson(saveData, true);
 		File.WriteAllText(carsDirectory + name + JsonExtension, json);
+		SyncCarsDirectoryToCloud();
 		Debug.Log(Application.persistentDataPath);
 	}
 
 	public static void Load() {
+		RestoreCarsDirectoryFromCloud();
 		string carsDirectory = Application.persistentDataPath + CarsFolder;
 		if (!Directory.Exists(carsDirectory))
 			return;
@@ -99,6 +114,7 @@ public class Serialization {
 
 		saveData.previewPngData = System.Convert.ToBase64String(pngBytes);
 		File.WriteAllText(path, JsonUtility.ToJson(saveData, true));
+		SyncCarsDirectoryToCloud();
 	}
 
 	static byte[] SerializeCarToBytes(SerializableCar car) {
@@ -129,12 +145,74 @@ public class Serialization {
 
 	public static void DeleteCar(int id){
 		File.Delete(Application.persistentDataPath + CarsFolder + HUD.titleCarsCustom[id].Trim() + JsonExtension);
+		SyncCarsDirectoryToCloud();
 		GameObject g = HUD.carsCustom [id];
 		HUD.carsCustom.Remove (g);
 		string t = HUD.titleCarsCustom [id];
 		HUD.titleCarsCustom.Remove (t);
 		Sprite s = HUD.imagesCarsCustom [id];
 		HUD.imagesCarsCustom.Remove (s);
+	}
+
+	static void SyncCarsDirectoryToCloud() {
+		string carsDirectory = Application.persistentDataPath + CarsFolder;
+		if (!Directory.Exists(carsDirectory)) {
+			SaveLoadSystem.SaveEditorCarsData(string.Empty);
+			return;
+		}
+
+		string[] jsonFiles = Directory.GetFiles(carsDirectory, "*" + JsonExtension);
+		CarsCloudData cloudData = new CarsCloudData();
+		for (int i = 0; i < jsonFiles.Length; i++) {
+			string path = jsonFiles[i];
+			if (!File.Exists(path))
+				continue;
+
+			string fileName = Path.GetFileNameWithoutExtension(path);
+			string json = File.ReadAllText(path);
+			if (string.IsNullOrEmpty(fileName) || string.IsNullOrEmpty(json))
+				continue;
+
+			CarCloudEntry entry = new CarCloudEntry();
+			entry.name = fileName;
+			entry.jsonBase64 = System.Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+			cloudData.cars.Add(entry);
+		}
+
+		string payload = cloudData.cars.Count > 0 ? JsonUtility.ToJson(cloudData) : string.Empty;
+		SaveLoadSystem.SaveEditorCarsData(payload);
+	}
+
+	static void RestoreCarsDirectoryFromCloud() {
+		string payload = SaveLoadSystem.LoadEditorCarsData();
+		if (string.IsNullOrEmpty(payload))
+			return;
+
+		CarsCloudData cloudData = JsonUtility.FromJson<CarsCloudData>(payload);
+		if (cloudData == null || cloudData.cars == null || cloudData.cars.Count == 0)
+			return;
+
+		string carsDirectory = Application.persistentDataPath + CarsFolder;
+		if (!Directory.Exists(carsDirectory))
+			Directory.CreateDirectory(carsDirectory);
+
+		string[] oldFiles = Directory.GetFiles(carsDirectory, "*" + JsonExtension);
+		for (int i = 0; i < oldFiles.Length; i++) {
+			File.Delete(oldFiles[i]);
+		}
+
+		for (int i = 0; i < cloudData.cars.Count; i++) {
+			CarCloudEntry entry = cloudData.cars[i];
+			if (entry == null || string.IsNullOrEmpty(entry.name) || string.IsNullOrEmpty(entry.jsonBase64))
+				continue;
+
+			byte[] jsonBytes = System.Convert.FromBase64String(entry.jsonBase64);
+			string carJson = Encoding.UTF8.GetString(jsonBytes);
+			if (string.IsNullOrEmpty(carJson))
+				continue;
+
+			File.WriteAllText(carsDirectory + entry.name.Trim() + JsonExtension, carJson);
+		}
 	}
 }
 
