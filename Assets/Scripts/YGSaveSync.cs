@@ -40,6 +40,7 @@ public class YGSaveSync : MonoBehaviour
         PlayerPrefs.SetString(SaveLoadSystem.KeySecondTNT, data.secondTNT ?? string.Empty);
         PlayerPrefs.SetString(SaveLoadSystem.KeyGameData, data.gameData ?? string.Empty);
         PlayerPrefs.SetString(SaveLoadSystem.KeyGameAuto, data.autosData ?? string.Empty);
+        PlayerPrefs.SetString(SaveLoadSystem.KeyEditorCarsData, data.editorCarsData ?? string.Empty);
         PlayerPrefs.SetString(SaveLoadSystem.KeyEditor, data.editorIsOpen.ToString());
         PlayerPrefs.SetString(SaveLoadSystem.KeySlow, data.slowMo.ToString());
         PlayerPrefs.SetFloat(SaveLoadSystem.KeyDistance, data.distance);

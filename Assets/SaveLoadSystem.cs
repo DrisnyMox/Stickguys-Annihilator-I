@@ -9,6 +9,7 @@ public static class SaveLoadSystem {
     public const string KeySecondTNT = "sTNT";
     public const string KeyGameData = "gmdata";
     public const string KeyGameAuto = "gmauto";
+    public const string KeyEditorCarsData = "editorCarsData";
     public const string KeyEditor = "editor";
     public const string KeySlow = "stSlow";
     public const string KeyDistance = "stDist";
@@ -115,6 +116,19 @@ public static class SaveLoadSystem {
 
     public static string LoadAutosData() {
         return PlayerPrefs.GetString(KeyGameAuto, string.Empty);
+    }
+
+    public static void SaveEditorCarsData(string data) {
+        PlayerPrefs.SetString(KeyEditorCarsData, data ?? string.Empty);
+        if (IsWebYGActive()) {
+            YandexGame.savesData.editorCarsData = data ?? string.Empty;
+            SaveProgressYG();
+        }
+        Save();
+    }
+
+    public static string LoadEditorCarsData() {
+        return PlayerPrefs.GetString(KeyEditorCarsData, string.Empty);
     }
 
     public static void SaveEditorState(bool isOpen) {
