@@ -41,7 +41,6 @@ public class EditorCar : MonoBehaviour {
 			GameObject.Find("txt_Ok").GetComponent<Text>().text = Settings.lng.txt_Yes;
 			GameObject.Find("txt_Cancel").GetComponent<Text>().text = Settings.lng.txt_cancelEditor;
 			GameObject.Find("Placeholder_TitleCar").GetComponent<Text>().text = Settings.lng.txt_EnterTitleCar;
-
 		}
 	}
 
@@ -360,5 +359,12 @@ public class EditorCar : MonoBehaviour {
 	void ChangeLanguage(){
 		GameObject.Find ("txt_Save").GetComponent<Text> ().text = Settings.lng.txt_saveEditor;
 		GameObject.Find ("txt_Back").GetComponent<Text> ().text = Settings.lng.txt_BackEditor;
+	}
+
+	[SerializeField] Text timeScaleTracker;
+
+    private void Update()
+    {
+		timeScaleTracker.text = $"{Time.timeScale}";
 	}
 }
