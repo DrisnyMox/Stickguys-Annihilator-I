@@ -3,12 +3,16 @@ using System.Collections;
 
 public class ClickScript : MonoBehaviour {
 
+	[SerializeField] UIButtonClickEffect clickEffect;
+
 	public bool ClickedIs { get; set; } = false;
 	public bool ClikedOnUI { get; set; } = false;
 	// Use this for initialization
 	public void OnMouseDown () {
 		ClickedIs = true;
 		ClikedOnUI = true;
+
+		clickEffect?.PlayEffect();
 
 		DebugLog.Add("click down");
 	}
