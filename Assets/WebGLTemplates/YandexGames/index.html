@@ -174,17 +174,17 @@
             requestAnimationFrame(() => {
                 if (checkingPauseStatus && isPausedGame) return;
 
-                // Проверяем, не активен ли сейчас HTML-элемент ввода
-                // (тот самый скрытый инпут, который создает Unity для клавиатуры)
                 const active = document.activeElement;
-                if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) {
-                    return; // Прерываем функцию, не отбираем фокус у клавиатуры!
+                if (active && (active.tagName === 'INPUT' ||
+                    active.tagName === 'TEXTAREA' ||
+                    active.isContentEditable
+                )) {
+                    return;
                 }
 
                 canvas.focus({ preventScroll: true });
             });
         }
-
 
         function SetVisibility(visibility) {
             if (ysdk !== null && initGame === true && isVisibility !== visibility) {

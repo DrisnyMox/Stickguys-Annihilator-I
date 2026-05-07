@@ -13,6 +13,7 @@ namespace YG
         public string secondTNT = "3";
         public string gameData = string.Empty;
         public string autosData = string.Empty;
+        public string editorCarsData = string.Empty;
         public bool editorIsOpen;
         public bool slowMo = true;
         public float distance = 7;
