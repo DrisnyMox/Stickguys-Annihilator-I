@@ -4,7 +4,7 @@ using System.Collections;
 public class SpawnerScript : MonoBehaviour
 {
     [Header("Основные настройки")]
-    public GameObject prefabToSpawn;      // Префаб, который будем спавнить
+    public GameObject[] prefabsToSpawn;   // Массив префабов для случайного спавна
     public Transform referenceTransform;  // Трансформ, от которого считаем расстояние
 
     [Header("Параметры позиции")]
@@ -27,9 +27,10 @@ public class SpawnerScript : MonoBehaviour
             referenceTransform = transform;
         }
 
-        if (prefabToSpawn == null)
+        // Проверяем, что массив префабов не пуст
+        if (prefabsToSpawn == null || prefabsToSpawn.Length == 0)
         {
-            Debug.LogError("SpawnerScript: Не назначен Prefab To Spawn!");
+            Debug.LogError("SpawnerScript: Массив префабов пуст! Добавьте хотя бы один префаб в инспекторе.");
             return;
         }
 
@@ -49,18 +50,29 @@ public class SpawnerScript : MonoBehaviour
     void TrySpawn()
     {
         // Рассчитываем потенциальную позицию для спавна
-        // Берем X от назначенного объекта + смещение, Y — фиксированный
         float spawnX = referenceTransform.position.x + spawnOffsetX;
         Vector3 potentialPos = new Vector3(spawnX, fixedY, referenceTransform.position.z);
 
         // Если это первый спавн, или дистанция до предыдущего больше порога
         if (!firstSpawnDone || Vector3.Distance(potentialPos, lastSpawnPosition) >= minDistance)
         {
-            Instantiate(prefabToSpawn, potentialPos, Quaternion.identity);
+            // Выбираем случайный префаб из массива
+            int randomIndex = Random.Range(0, prefabsToSpawn.Length);
+            GameObject selectedPrefab = prefabsToSpawn[randomIndex];
 
-            // Запоминаем позицию и ставим флаг, что первый спавн прошел
-            lastSpawnPosition = potentialPos;
-            firstSpawnDone = true;
+            // Дополнительная проверка, чтобы не было ошибки, если в массиве есть пустой слот (null)
+            if (selectedPrefab != null)
+            {
+                Instantiate(selectedPrefab, potentialPos, Quaternion.identity);
+
+                // Запоминаем позицию и ставим флаг, что первый спавн прошел
+                lastSpawnPosition = potentialPos;
+                firstSpawnDone = true;
+            }
+            else
+            {
+                Debug.LogWarning($"SpawnerScript: Элемент массива под индексом {randomIndex} пуст (null)!");
+            }
         }
         else
         {

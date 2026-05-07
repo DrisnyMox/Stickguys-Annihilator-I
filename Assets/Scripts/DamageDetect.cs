@@ -140,11 +140,11 @@ public class DamageDetect : MonoBehaviour
 
 		bool isMeat = false;
 
-		if (col.transform.CompareTag("MEAT"))
+		if (col.transform.CompareTag("MEAT") || col.transform.CompareTag("BOBER"))
 		{
 			isMeat = true;
 		}
-		else if (col.transform.parent != null && col.transform.parent.CompareTag("MEAT"))
+		else if (col.transform.parent != null && (col.transform.parent.CompareTag("MEAT") || col.transform.parent.CompareTag("BOBER")))
 		{
 
 			isMeat = true;
