@@ -3,7 +3,13 @@ using UnityEngine.UI;
 using System.Collections;
 using System;
 
-public class DamageDetect : MonoBehaviour {
+public class DamageDetect : MonoBehaviour
+{
+	[Header("Оптимизация коллизий")]
+	public bool autoDisableCollision = false;
+	public float disableCollisionTime = 60f;
+	private bool isMeatCollisionDisabled = false;
+	private Collider2D myCollider;
 
 	Color oldColor;
 	public GameObject blood;
@@ -29,131 +35,248 @@ public class DamageDetect : MonoBehaviour {
 	bool isAudioSource;
 	bool isStickmanAudionController;
 
-
-
-	void Awake(){
+	void Awake()
+	{
 		beFridge = false;
+		myCollider = GetComponent<Collider2D>();
 	}
 
 	// Use this for initialization
-	IEnumerator Start () {
-		
-		if (GameObject.Find ("Pool Blood")) {
-			PoolBlood = GameObject.Find ("Pool Blood").transform;
+	IEnumerator Start()
+	{
+		// Безопасный поиск UI и текста опыта
+		GameObject uiObject = GameObject.Find("UI");
+		if (uiObject != null)
+		{
+			ui = uiObject.transform;
+			if (ui.childCount > 0)
+			{
+				txtExp = ui.GetChild(ui.childCount - 1).GetComponent<Text>();
+			}
+        }
+        else
+        {
+			autoDisableCollision = true;
+
 		}
 
-		if(GetComponent<SpriteRenderer> ()){
-			oldColor = GetComponent<SpriteRenderer> ().color;
+		// Запускаем таймер отключения коллизии, если галочка стоит
+		if (autoDisableCollision)
+		{
+			StartCoroutine(DisableCollisionTimer());
 		}
-		ui = GameObject.Find ("UI").transform;
-		source = GetComponent<AudioSource> ();
+
+		GameObject poolBloodObj = GameObject.Find("Pool Blood");
+		if (poolBloodObj != null)
+		{
+			PoolBlood = poolBloodObj.transform;
+		}
+
+		if (GetComponent<SpriteRenderer>())
+		{
+			oldColor = GetComponent<SpriteRenderer>().color;
+		}
+
+		
+
+		source = GetComponent<AudioSource>();
 		if (source)
 			isAudioSource = true;
-		sprRender = GetComponent<SpriteRenderer> ();
-		stickAudioController = GetComponentInParent<StickmanAudioController> ();
+
+		sprRender = GetComponent<SpriteRenderer>();
+		stickAudioController = GetComponentInParent<StickmanAudioController>();
 		if (stickAudioController)
 			isStickmanAudionController = true;
-		txtExp = ui.GetChild (ui.childCount - 1).GetComponent<Text> ();
-		if (transform.parent.name.IndexOf ("Xymus") >= 0) {
-			HingeJoint2D hj2d = GetComponent<HingeJoint2D> ();
-			if (hj2d && transform.parent.name.IndexOf("Pizdos") <= 0) {
-				hj2d.breakForce = (UnityEngine.Random.Range (3f, 8f) * 10000f);
+
+		if (transform.parent != null && transform.parent.name.IndexOf("Xymus") >= 0)
+		{
+			HingeJoint2D hj2d = GetComponent<HingeJoint2D>();
+			if (hj2d && transform.parent.name.IndexOf("Pizdos") <= 0)
+			{
+				hj2d.breakForce = (UnityEngine.Random.Range(3f, 8f) * 10000f);
 			}
 		}
-		rgdbody = GetComponent<Rigidbody2D> ();
-		distanceOfDisabled = GetComponentInParent<ComponentMenager> ().distanceOfDisabled;
-		detectRagdoll = GetComponent<DetectRagdoll> ();
-		if (transform.childCount > 0) {
-			transform.GetChild (0).GetComponent<SpriteRenderer> ().color = new Color (1, 1, 1);
-			transform.GetChild (0).gameObject.SetActive (false);
+		rgdbody = GetComponent<Rigidbody2D>();
+
+		ComponentMenager compManager = GetComponentInParent<ComponentMenager>();
+		if (compManager != null)
+		{
+			distanceOfDisabled = compManager.distanceOfDisabled;
 		}
-		if (transform.Find ("Bone")) {
-			sprBone = transform.Find ("Bone").GetComponent<SpriteRenderer> ();
+
+		detectRagdoll = GetComponent<DetectRagdoll>();
+
+		if (transform.childCount > 0)
+		{
+			Transform firstChild = transform.GetChild(0);
+			SpriteRenderer childSpr = firstChild.GetComponent<SpriteRenderer>();
+			if (childSpr != null)
+			{
+				childSpr.color = new Color(1, 1, 1);
+			}
+			firstChild.gameObject.SetActive(false);
 		}
+
+		Transform boneTransform = transform.Find("Bone");
+		if (boneTransform != null)
+		{
+			sprBone = boneTransform.GetComponent<SpriteRenderer>();
+		}
+
 		boneColor = HUD.sBoneColor;
-		yield return new WaitForSeconds (5.8f);
-
-	}
-	
-	// Update is called once per frame
-	void FixedUpdate () {
-		if (source) {
-			if (Time.timeScale >= 0.99f) {
-				source.pitch = 1;
-			} else {
-				source.pitch = 0.15f;
-			}
-		}
-		if (!detectRagdoll && rgdbody && rgdbody.isKinematic == false) {
-			if (Vector3.Distance (transform.position, car.transform.position) > distanceOfDisabled) {
-				gameObject.SetActive (false);
-			}
-		}
+		yield return new WaitForSeconds(5.8f);
 	}
 
-	void OnCollisionEnter2D (Collision2D col){
+	IEnumerator DisableCollisionTimer()
+	{
+		yield return new WaitForSeconds(disableCollisionTime);
+		isMeatCollisionDisabled = true;
+	}
 
-		float forceCollision = Mathf.Abs (col.relativeVelocity.x) + Mathf.Abs (col.relativeVelocity.y);
-		if (forceCollision > 10) {
-			if (col.transform.CompareTag ("CAR") || col.transform.CompareTag("BOBER") || col.transform.CompareTag("BULLET") ) {
-				sprRender.color = new Color (0.58f, 0.153f, 0.153f);
-				if (!corutinePlayed) {
-					StartCoroutine (ColorDown ());
+	// Общий метод для проверки и игнорирования коллизии с мясом
+	bool CheckAndIgnoreMeatCollision(Collision2D col)
+	{
+		if (myCollider == null || col.collider == null) return false;
+
+		bool isMeat = false;
+
+		if (col.transform.CompareTag("MEAT"))
+		{
+			isMeat = true;
+		}
+		else if (col.transform.parent != null && col.transform.parent.CompareTag("MEAT"))
+		{
+
+			isMeat = true;
+			
+		}
+
+		if (isMeat)
+		{
+			Physics2D.IgnoreCollision(myCollider, col.collider, true);
+			return true;
+		}
+
+		return false;
+	}
+
+	// Если объекты уже лежали друг на друге, когда сработал таймер, этот метод их разлепит
+	void OnCollisionStay2D(Collision2D col)
+	{
+		if (isMeatCollisionDisabled)
+		{
+			CheckAndIgnoreMeatCollision(col);
+		}
+	}
+
+	void OnCollisionEnter2D(Collision2D col)
+	{
+		// Проверяем отключение коллизии ПЕРЕД просчетом урона
+		if (isMeatCollisionDisabled)
+		{
+			if (CheckAndIgnoreMeatCollision(col))
+			{
+				return; // Прерываем логику урона, крови и звуков, так как коллизия игнорируется
+			}
+		}
+
+		float forceCollision = Mathf.Abs(col.relativeVelocity.x) + Mathf.Abs(col.relativeVelocity.y);
+		if (forceCollision > 10)
+		{
+			if (col.transform.CompareTag("CAR") || col.transform.CompareTag("BOBER") || col.transform.CompareTag("BULLET"))
+			{
+				sprRender.color = new Color(0.58f, 0.153f, 0.153f);
+				if (!corutinePlayed)
+				{
+					StartCoroutine(ColorDown());
 				}
-				if(BloodActivator.enable)// TODO
-				SpawnBlood ();
-				if (isAudioSource) {
-					if (source.time <= 0.001f) {
-						source.Play ();
+				if (BloodActivator.enable)// TODO
+					SpawnBlood();
+
+				if (isAudioSource)
+				{
+					if (source.time <= 0.001f)
+					{
+						source.Play();
 					}
 				}
 
-				if(isStickmanAudionController)
-					stickAudioController.PlayShotScream ();
-				if ( numberLevel <= 1 ) {
-					Levels.currentExperience [numberLevel] += 10;
-				} else {
-					Levels.currentExperience [numberLevel] += (int)(10 * (numberLevel / 1.3f));
+				if (isStickmanAudionController)
+					stickAudioController.PlayShotScream();
+
+				if (ui)
+				{
+					if (numberLevel <= 1)
+					{
+						Levels.currentExperience[numberLevel] += 10;
+					}
+					else
+					{
+						Levels.currentExperience[numberLevel] += (int)(10 * (numberLevel / 1.3f));
+					}
 				}
 
-				txtExp.text = $"{Settings.lng.txt_ExpShort} {Levels.currentExperience[numberLevel]}";
+				// Безопасное обновление текста
+				if (txtExp != null)
+				{
+					txtExp.text = $"{Settings.lng.txt_ExpShort} {Levels.currentExperience[numberLevel]}";
+				}
 
-				if (sprBone) {
-					//Color c = new Color (1,1,1,0);
-					Color c = boneColor.currentColor;//new Color (0,0,0,0);
-					c.a = Mathf.Clamp ((forceCollision / Time.timeScale / 300f), 0f, 0.88f);
+				if (sprBone && boneColor != null)
+				{
+					Color c = boneColor.currentColor;
+					c.a = Mathf.Clamp((forceCollision / Time.timeScale / 300f), 0f, 0.88f);
 					sprBone.color = c;
 				}
 			}
-			if (col.transform.parent && col.transform.parent.CompareTag ("MEAT")) {
-				if (transform.parent.name != col.transform.parent.name) {
-					sprRender.color = new Color (0.54f, 0.164f, 0.164f);
-					if (!corutinePlayed) {
-						StartCoroutine (ColorDown ());
+			if (col.transform.parent && col.transform.parent.CompareTag("MEAT"))
+			{
+				if (transform.parent != null && transform.parent.name != col.transform.parent.name)
+				{
+					sprRender.color = new Color(0.54f, 0.164f, 0.164f);
+					if (!corutinePlayed)
+					{
+						StartCoroutine(ColorDown());
 					}
-					if(BloodActivator.enable)// TODO
-					SpawnBlood ();
-				
-					if (numberLevel <= 1) {
-						Levels.currentExperience [numberLevel] += 5;
-					} else {
-						Levels.currentExperience [numberLevel] += (int)(5*(numberLevel/1.3f));
+					if (BloodActivator.enable)// TODO
+						SpawnBlood();
+
+					if (ui)
+					{
+						if (numberLevel <= 1)
+						{
+							Levels.currentExperience[numberLevel] += 5;
+						}
+						else
+						{
+							Levels.currentExperience[numberLevel] += (int)(5 * (numberLevel / 1.3f));
+						}
 					}
-					//txtExp.text = "Exp: "+Levels.currentExperience[numberLevel].ToString ();
 				}
-			} 
+			}
 		}
-		if (beFridge) {
-			Fridge.StickForFreeze stick = fridge.stickmansIced.Find (s => s.stickman == transform.parent);
-			if (stick != null && stick.iced == true) {
-				if (GetComponent<HingeJoint2D> ()) {
-					GetComponent<Rigidbody2D> ().gravityScale = 1;
-					GetComponent<Rigidbody2D> ().drag = 0;
-					Destroy (GetComponent<HingeJoint2D> ());
-					foreach (IceBreak ib in IceBreak.breaks) {
-						if (!ib.use) {
-							ib.SetBreak (transform);
-							break;
+
+		if (beFridge && fridge != null && fridge.stickmansIced != null)
+		{
+			Fridge.StickForFreeze stick = fridge.stickmansIced.Find(s => s.stickman == transform.parent);
+			if (stick != null && stick.iced == true)
+			{
+				HingeJoint2D hinge = GetComponent<HingeJoint2D>();
+				if (hinge != null)
+				{
+					rgdbody.gravityScale = 1;
+					rgdbody.drag = 0;
+					Destroy(hinge);
+
+					if (IceBreak.breaks != null)
+					{
+						foreach (IceBreak ib in IceBreak.breaks)
+						{
+							if (!ib.use)
+							{
+								ib.SetBreak(transform);
+								break;
+							}
 						}
 					}
 				}
@@ -161,18 +284,26 @@ public class DamageDetect : MonoBehaviour {
 		}
 	}
 
-	void SpawnBlood(){
-		if (Blood.GetBlood (transform)) {
+	void SpawnBlood()
+	{
+		if (Blood.GetBlood(transform))
+		{
 			timePause = Time.deltaTime;
 		}
 	}
 
-	IEnumerator ColorDown(){
+	IEnumerator ColorDown()
+	{
 		corutinePlayed = true;
-		yield return new WaitForSeconds (1.8f);
-		sprRender.color = oldColor;
-		if(sprBone)
-			sprBone.color = new Color (1, 1, 1, 0);
+		yield return new WaitForSeconds(1.8f);
+		if (sprRender != null)
+		{
+			sprRender.color = oldColor;
+		}
+		if (sprBone != null)
+		{
+			sprBone.color = new Color(1, 1, 1, 0);
+		}
 		corutinePlayed = false;
 	}
 }

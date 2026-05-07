@@ -4,15 +4,17 @@ using System.Collections;
 public class AudioContrCar : MonoBehaviour {
 
 	public AudioClip s_motor;
-	public AnimationCurve curvePitch;
-	float maxMotor;
+	
+	AnimationCurve curvePitch;
 	AudioSource source;
 	WheelJoint2D wheel;
-	// Use this for initialization
+
+
 	void Start()
 	{
 		wheel = GetComponent<WheelJoint2D>();
-		maxMotor = wheel.motor.maxMotorTorque;
+		curvePitch = new();
+
 #if !UNITY_WEBGL
 		curvePitch.AddKey (0, 0.8f);
 #else
@@ -24,7 +26,7 @@ public class AudioContrCar : MonoBehaviour {
 		source.Play();
 	}
 	
-	// Update is called once per frame
+
 	void FixedUpdate () {
 		float currentSpeed = Mathf.Abs(wheel.motor.motorSpeed);
 		if (Time.timeScale >= 0.99f) {

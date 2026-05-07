@@ -38,6 +38,9 @@ public class Menu : MonoBehaviour {
 
 	void Awake() {
 
+		Time.timeScale = 1f;
+		Time.fixedDeltaTime = 0.025f;//0.03f;
+
 		motors = Motors;
 		p_MainMenu.SetActive(true);
 		p_Levels.SetActive(false);

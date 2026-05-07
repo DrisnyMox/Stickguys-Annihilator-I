@@ -10,12 +10,19 @@ public class CheckFire : MonoBehaviour {
 		Check ();
 	}
 
-	public static void Check(){
-		Gun cf = (Gun)FindObjectOfType (typeof(Gun));
-		if (cf == null) {
-			checkFire.gameObject.SetActive (false);
-		} else {
-			checkFire.gameObject.SetActive (true);
+	public static void Check()
+	{
+		if (!checkFire)
+			return;
+
+		Gun cf = (Gun)FindObjectOfType(typeof(Gun));
+		if (cf == null)
+		{
+			checkFire.gameObject.SetActive(false);
+		}
+		else
+		{
+			checkFire.gameObject.SetActive(true);
 		}
 	}
 		
