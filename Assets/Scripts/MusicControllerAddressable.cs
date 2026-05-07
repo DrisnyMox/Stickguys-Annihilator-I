@@ -158,11 +158,11 @@ public class MusicControllerAddressable : MonoBehaviour
         {
             // ЖЕСТКИЙ ОТКАТ: Если бандлы не готовы, а текущий плеер ЗАМОЛЧАЛ (тишина на сцене)
             // мы экстренно спасаемся вшитым стартовым треком!
-            if (firstTrackDirect != null && !ActiveSource.isPlaying && currentTrackGuid != "builtin_fallback")
-            {
+            //if (currentTrackGuid != "builtin_fallback")
+            //{
                 targetTrackGuid = "builtin_fallback";
                 StartCoroutine(SeamlessTransition(firstTrackDirect, "builtin_fallback"));
-            }
+            //}
         }
     }
 
